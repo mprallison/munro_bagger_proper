@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+#mountainTable th {
+    background-color: #cccccc; 
+    font-weight: bold; 
+    }
+  #mountainTable {
+    margin-left: 0;  
+    float: left;    
+    text-align: left; 
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+const searchInput = document.getElementById('searchInput');
+const rows = document.querySelectorAll('#mountainTable tbody tr');
+
+searchInput.addEventListener('input', function () {
+    const filter = searchInput.value.toLowerCase();
+    rows.forEach(row => {
+    const nameText = row.cells[0].textContent.toLowerCase();
+    row.style.display = nameText.includes(filter) ? '' : 'none';
+    });
+});
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tableId = 'mountainTable';
+    const startCol = 2; // 0-based index: 3rd column
+
+    function filterRowsByCellIdsAnyMatch() {
+        const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+        const selects = document.querySelectorAll(`#${tableId} thead th select.colFilter`);
+
+        rows.forEach(row => {
+            let show = true;
+
+            selects.forEach((select, index) => {
+                const val = select.value.toLowerCase();
+                const cell = row.cells[startCol + index];
+                if (val && cell.id.toLowerCase() !== val) {
+                    show = false;
+                }
+            });
+
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    // Attach change event to all dropdowns
+    document.querySelectorAll(`#${tableId} thead th select.colFilter`)
+        .forEach(select => select.addEventListener('change', filterRowsByCellIdsAnyMatch));
+});
+</script>
+
+<style>
+  #searchInput::placeholder {
+      text-align: right;  /* Placeholder moves right */
+  }
+</style>
+
+<body>
+
+<table id="mountainTable" border="1" cellpadding="5">
+<colgroup>
+    <col style="width: 170px;">
+    <col style="width: 100px;">
+    <col style="width: 120px;" span="3">
+</colgroup>
+
+  <thead>
+    <tr>
+    <th>Name (282)<br> <input type="text" id="searchInput" placeholder="🔍" style="width: 100px;"></th>
+    <th>Height (m)</th>
+    {% for person in baggers %}
+    <th>{{ person }} ({{ baggers[person] }}) <br>
+        <select class="colFilter">
+            <option value="">all</option>
+            <option value="gap">gaps</option>
+            <option value="bag">bags</option>
+        </select>
+    </th>
+    {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data %}
+      <tr>
+         
+          <td>{{ row["name"] }}</td>
+          <td>{{ row["metres"] }}</td>
+        
+        {% for col in baggers %}
+        {% if row[col] == "" %}
+
+          <td id="gap" style="width:30px; height:30px; text-align:center;">
+            🔺
+          </td>
+        </td>
+            {% else %}
+        <td id="bag" style="text-align: center">
+            <img src="/static/images/{{ col }}.png" alt="image" width="30px" height="30px">
+        </td>
+        {% endif %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<body>
+
+</html>
