@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>munrosWithFriends</title>
-  <link rel="icon" href="/static/images/munro.png" type="image/png">
+  <title>OS Mountain Map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -20,13 +19,12 @@
 
     #map { position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
 
-
     #table_layer {
       display: block;
       position: absolute;
       top: 0;
       left: 0;
-      width: 130px;
+      width: 140px;
       height: 98.5dvh;
       background: rgba(255, 255, 255, 0.95);
       border: 1px solid #ddd; 
@@ -39,7 +37,6 @@
       }
 
     #mountainTable td button {
-        cursor: pointer;
         text-align: left;
         vertical-align: top;
         white-space: normal; 
@@ -59,7 +56,7 @@
       font-weight: bold;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       text-align: top;
-      width: 200px;
+      width: 240px;
       height: 210px;
       text-align: top;
     }
@@ -75,7 +72,7 @@
     #toggleSidebar {
       position: absolute;
       top: 10px;
-      left: 160px;
+      left: 170px;
       z-index: 1100;
       padding: 5px 10px;b
       background-color: #fff;
@@ -86,35 +83,33 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.3);
       transition: left 0.5s ease; 
       }
-
-    button {
-        border-radius: 6px;
-        border-width: 1px;
-        border-color: black;
-        cursor: pointer;
-        background-color: D8D8D8;
-       }
-    
-    button:hover {
-      filter: brightness(90%);
-    }
     
 
   /* Make all Leaflet popups slightly transparent */
   .leaflet-popup-content-wrapper {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.8);
     box-shadow: 0 3px 14px rgba(0,0,0,0.4);
     }
   .leaflet-popup-tip {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.8);
     }
 
   </style>
   </head>
 
-  <body>
+<body>
 
 <script>
+const canvas = document.getElementById('fireworks-canvas');
+const ctx = canvas.getContext('2d');
+let cw = canvas.width = window.innerWidth;
+let ch = canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  cw = canvas.width = window.innerWidth;
+  ch = canvas.height = window.innerHeight;
+});
+
   document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById('searchInput');
     const rows = document.querySelectorAll('#mountainTable tbody tr');
@@ -158,13 +153,13 @@
 <div id="table_layer">
   <table id="mountainTable">
     <colgroup><col style="width: 120px"></colgroup>
-    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
+    <thead>
       <th style="text-align: left;">
         Name (282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
       </th>
     </thead>
-    <tbody style="display:block; margin-top: 30px;">
+    <tbody>
       {% for loc in locations %}
         <tr>
           <td>
@@ -180,97 +175,12 @@
 
 </div>
 
-<!-- Toggle Button -->
-<button id="toggleSidebar">Hide table</button>
-
-<script>
-  const sidebar = document.getElementById("table_layer");
-  const toggleBtn = document.getElementById("toggleSidebar");
-
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("collapsed");
-
-    // Optional: move the toggle button with the sidebar
-    if (sidebar.classList.contains("collapsed")) {
-      toggleBtn.style.left = "10px";  // adjust position when collapsed
-      toggleBtn.textContent = "Show table";
-    } else {
-      toggleBtn.style.left = "160px";
-      toggleBtn.textContent = "Hide table";
-    }
-  });
-</script>
-
-<style>
-  /* Add a small gap between username and password fields */
-  #login-form input[name="user_name"],
-  #signup-form input[name="user_name"],
-  #login-form input[name="password"],
-  #signup-form input[name="password"],
-  #login-form button,
-  #signup-form button,
-  .links {
-    margin-top: 8px; /* Adjust the gap size as needed */
-    display: block;  /* Ensures it appears on a new line */
-  }
-</style>
-
-<div id="login">
-  <h2 id="form-title">Login</h2>
-
-  <!-- Login Form -->
-  <form id="login-form" action="/login" method="POST">
-    <input type="text" name="user_name" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit" style="display:inline-block;">Login</button> 
-    <div id="login-error" style="display:inline-block; margin-left:10px; margin-right:10px; color: red;">{{ error|default('') }}</div>
-  </form>
-
-  <!-- Signup Form -->
-  <form id="signup-form" action="/signup" method="POST" style="display: none;">
-    <input type="text" name="email" placeholder="Email" required>
-    <input type="text" name="user_name" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Sign Up</button>
-  </form>
-
-  <div class="links">
-    <a href="#" id="toggle-form">Sign Up</a> | 
-    <a href="#">Forgot Password?</a>
-  </div>
-</div>
-
-<script>
-const toggleLink = document.getElementById('toggle-form');
-const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
-const formTitle = document.getElementById('form-title');
-
-toggleLink.addEventListener('click', function(e) {
-  e.preventDefault();
-
-  if (signupForm.style.display === 'none') {
-    // Show signup, hide login
-    loginForm.style.display = 'none';
-    signupForm.style.display = 'block';
-    formTitle.textContent = 'Sign Up';
-    toggleLink.textContent = 'Login';
-  } else {
-    // Show login, hide signup
-    signupForm.style.display = 'none';
-    loginForm.style.display = 'block';
-    formTitle.textContent = 'Login';
-    toggleLink.textContent = 'Sign Up';
-  }
-});
-</script>
-
 <script>
 
   var map = L.map('map', {
     center: [57.08, -4.02],
     zoom: 7,
-    minZoom: 7,
+    minZoom: 6,
     maxZoom: 13,
     zoomControl: false 
   });
@@ -286,7 +196,7 @@ toggleLink.addEventListener('click', function(e) {
   L.tileLayer(`https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=${apiKey}`, {
     attribution: '&copy; Ordnance Survey',
     maxZoom: 18,
-    minZoom: 7,
+    minZoom: 8,
     tileSize: 512,
     zoomOffset: -1,
     noWrap: true,
@@ -312,13 +222,14 @@ toggleLink.addEventListener('click', function(e) {
     })
     .on('click', function (e) {
     // Create custom popup content
-    const popupContent = `
+        const popupContent = `
             <div style="
-          width: 300px;
+          width: 200px;
+
           border-radius: 8px;
           font-family: Arial, sans-serif;
           color: #333;
-          padding: 0px;
+          padding: 1px;
           
       ">
         <h3 style="
@@ -326,12 +237,10 @@ toggleLink.addEventListener('click', function(e) {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
-            text-align: center;
+            text-align: left;
         ">
-          <a href="{{ loc.whl_url }}" target="_blank">{{ loc.name|e }}</a>
+          {{ loc.name|e }}
         </h3>
-
-        <p style = "font-size: 12px;"> {{ loc.description }} </p>
 
     <div style="
       display: grid;
@@ -342,14 +251,67 @@ toggleLink.addEventListener('click', function(e) {
       color: #000;">
 
         <strong>Height:</strong>
-        <span>{{ loc.height }}</span>
+        <span>{{ loc.height }}m</span>
 
-              <strong>Region:</strong>
-        <span>{{ loc.region }}</span>
-    </div>
-    <p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>
-      `;
+              <strong>County:</strong>
+        <span>{{ loc.county }}</span>
 
+
+        <strong>SMC region:</strong>
+        <span>{{ loc.region }}</span><br>
+      </div>
+
+    <style>
+      .form-element {
+        display: block;        /* Makes inputs/textarea stack vertically */
+        margin-bottom: 10px;   /* Even spacing between elements */
+        border: 2px solid #000;
+        border-radius: 4px;
+        padding: 4px;
+      }
+
+      #friends-{{ loc.id }}, #notes-{{ loc.id }} {
+        width: 180px;  /* specific width for larger textareas */
+      }
+
+      #visit-date-{{ loc.id }}, #distance-{{ loc.id }} {
+        width: 100px;
+      }
+
+      #notes-{{ loc.id }} {
+        height: 80px;
+      }
+
+      /* Optional: same height for other inputs */
+      #visit-date-{{ loc.id }}, #distance-{{ loc.id }}, #friends-{{ loc.id }} {
+        height: 20px;
+      }
+    </style>
+
+    <!-- Date Picker -->
+    <input type="date" id="visit-date-{{ loc.id }}" name="visit-date"  class="form-element">
+
+    <!-- distance -->
+    <textarea id="distance-{{ loc.id }}" name="distance"  placeholder="Distance" class="form-element"></textarea>
+
+    <!-- friends -->
+    <textarea id="friends-{{ loc.id }}" name="friends"  placeholder="Friends" class="form-element"></textarea>
+
+    <!-- Notes -->
+    <textarea id="notes-{{ loc.id }}" name="notes"  placeholder="Notes" class="form-element"></textarea>
+
+
+      <div style="text-align: center; margin-top: 10px;">
+      
+      <button 
+          onclick="alert('Button clicked!')"
+                  style="background-color: gold; color: black; border: 2px solid #b8860b; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                  In the bag 🏔️
+                </button>
+              </div>
+            </div>
+          `;
+    
       L.popup()
         .setLatLng(e.latlng)
         .setContent(popupContent)
@@ -358,6 +320,28 @@ toggleLink.addEventListener('click', function(e) {
 
 {% endfor %}
 
+</script>
+
+
+<!-- Toggle Button -->
+<button id="toggleSidebar">Hide table</button>
+
+<script>
+  const sidebar = document.getElementById("table_layer");
+  const toggleBtn = document.getElementById("toggleSidebar");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+
+    // Optional: move the toggle button with the sidebar
+    if (sidebar.classList.contains("collapsed")) {
+      toggleBtn.style.left = "10px";  // adjust position when collapsed
+      toggleBtn.textContent = "Show table";
+    } else {
+      toggleBtn.style.left = "170px";
+      toggleBtn.textContent = "Hide table";
+    }
+  });
 </script>
 
 </body>

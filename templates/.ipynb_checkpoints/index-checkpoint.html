@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>munrosWithFriends</title>
+  <title>munros-with-friends</title>
   <link rel="icon" href="/static/images/munro.png" type="image/png">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +75,7 @@
     #toggleSidebar {
       position: absolute;
       top: 10px;
-      left: 160px;
+      left: 170px;
       z-index: 1100;
       padding: 5px 10px;b
       background-color: #fff;
@@ -158,13 +158,13 @@
 <div id="table_layer">
   <table id="mountainTable">
     <colgroup><col style="width: 120px"></colgroup>
-    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
+    <thead>
       <th style="text-align: left;">
         Name (282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
       </th>
     </thead>
-    <tbody style="display:block; margin-top: 30px;">
+    <tbody>
       {% for loc in locations %}
         <tr>
           <td>
@@ -195,7 +195,7 @@
       toggleBtn.style.left = "10px";  // adjust position when collapsed
       toggleBtn.textContent = "Show table";
     } else {
-      toggleBtn.style.left = "160px";
+      toggleBtn.style.left = "170px";
       toggleBtn.textContent = "Hide table";
     }
   });
@@ -314,11 +314,11 @@ toggleLink.addEventListener('click', function(e) {
     // Create custom popup content
     const popupContent = `
             <div style="
-          width: 300px;
+          width: 200px;
           border-radius: 8px;
           font-family: Arial, sans-serif;
           color: #333;
-          padding: 0px;
+          padding: 1px;
           
       ">
         <h3 style="
@@ -326,12 +326,10 @@ toggleLink.addEventListener('click', function(e) {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
-            text-align: center;
+            text-align: left;
         ">
-          <a href="{{ loc.whl_url }}" target="_blank">{{ loc.name|e }}</a>
+          {{ loc.name|e }}
         </h3>
-
-        <p style = "font-size: 12px;"> {{ loc.description }} </p>
 
     <div style="
       display: grid;
@@ -344,10 +342,13 @@ toggleLink.addEventListener('click', function(e) {
         <strong>Height:</strong>
         <span>{{ loc.height }}</span>
 
-              <strong>Region:</strong>
+              <strong>County:</strong>
+        <span>{{ loc.county }}</span>
+
+
+        <strong>SMC region:</strong>
         <span>{{ loc.region }}</span>
     </div>
-    <p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>
       `;
 
       L.popup()

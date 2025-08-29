@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OS Mountain Map</title>
+  <title>munrosWithFriends</title>
+  <link rel="icon" href="/static/images/munro.png" type="image/png">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -19,12 +20,16 @@
 
     #map { position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
 
+    .button:hover {
+      cursor: pointer;
+    }
+
     #table_layer {
       display: block;
       position: absolute;
       top: 0;
       left: 0;
-      width: 140px;
+      width: 130px;
       height: 98.5dvh;
       background: rgba(255, 255, 255, 0.95);
       border: 1px solid #ddd; 
@@ -43,24 +48,6 @@
         width: 100%;
         }
 
-    #login {
-      position: fixed;   
-      top: 20px;
-      right: 20px;
-      padding: 5px 20px;
-      background-color: white;
-      color: black;
-      border: 2px solid black;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      text-align: top;
-      width: 240px;
-      height: 210px;
-      text-align: top;
-    }
-
     #searchInput::placeholder {
         text-align: right;
         }
@@ -72,7 +59,7 @@
     #toggleSidebar {
       position: absolute;
       top: 10px;
-      left: 170px;
+      left: 160px;
       z-index: 1100;
       padding: 5px 10px;b
       background-color: #fff;
@@ -87,11 +74,23 @@
 
   /* Make all Leaflet popups slightly transparent */
   .leaflet-popup-content-wrapper {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 3px 14px rgba(0,0,0,0.4);
     }
   .leaflet-popup-tip {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
+    }
+
+    button {
+        border-radius: 6px;
+        border-width: 1px;
+        border-color: black;
+        cursor: pointer;
+        background-color: D8D8D8;
+       }
+    
+    button:hover {
+      filter: brightness(90%);
     }
 
   </style>
@@ -100,16 +99,6 @@
 <body>
 
 <script>
-const canvas = document.getElementById('fireworks-canvas');
-const ctx = canvas.getContext('2d');
-let cw = canvas.width = window.innerWidth;
-let ch = canvas.height = window.innerHeight;
-
-window.addEventListener('resize', () => {
-  cw = canvas.width = window.innerWidth;
-  ch = canvas.height = window.innerHeight;
-});
-
   document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById('searchInput');
     const rows = document.querySelectorAll('#mountainTable tbody tr');
@@ -153,20 +142,28 @@ window.addEventListener('resize', () => {
 <div id="table_layer">
   <table id="mountainTable">
     <colgroup><col style="width: 120px"></colgroup>
-    <thead>
+    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
       <th style="text-align: left;">
-        Name (282)<br>
+        Name ({{ bag_total }}/282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
       </th>
-    </thead>
+    <tbody style="display:block; margin-top: 30px;">
     <tbody>
-      {% for loc in locations %}
+      {% for loc in log_data %}
         <tr>
           <td>
-            <button {{ loc.style|e }} 
-                    onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
+            {% if loc.date is none %}
+              <button onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
               {{ loc.name }}
             </button>
+            {% else %}
+            <button style = "background-color: #93C572;"
+                  onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
+              {{ loc.name }}
+            </button>
+            
+            {% endif %}
+
           </td>
         </tr>
       {% endfor %}
@@ -204,89 +201,104 @@ window.addEventListener('resize', () => {
     className: 'os-tiles'
   }).addTo(map);
 
-  const peakIcon = L.icon({
-    iconUrl: '/static/images/peak.png',
-    iconSize: [18, 18],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-  });
+  {% for loc in log_data %}
 
-
-  {% for loc in locations %}
-  L.marker([{{ loc.latitude }}, {{ loc.longitude }}], { icon: peakIcon })
-    .addTo(map)
-    .bindTooltip({{ loc.name|tojson }}, {
-      permanent: false,
-      direction: 'top',
-      offset: [-1, -7]
-    })
-    .on('click', function (e) {
-    // Create custom popup content
-        const popupContent = `
-            <div style="
-          width: 200px;
-
-          border-radius: 8px;
-          font-family: Arial, sans-serif;
-          color: #333;
-          padding: 1px;
-          
-      ">
-        <h3 style="
-            margin: 0 0 10px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            text-align: left;
-        ">
-          {{ loc.name|e }}
-        </h3>
-
-    <div style="
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      row-gap: 4px;
-      column-gap: 8px;
-      font-size: 13px;
-      color: #000;">
-
-        <strong>Height:</strong>
-        <span>{{ loc.height }}m</span>
-
-              <strong>County:</strong>
-        <span>{{ loc.county }}</span>
-
-
-        <strong>SMC region:</strong>
-        <span>{{ loc.region }}</span><br>
-      </div>
-
-    <!-- Date Picker -->
-    <input type="date" id="visit-date-{{ loc.id }}" name="visit-date" style="width: 100px; border: 2px solid #000; padding: 4px; border-radius: 4px;"><br><br>
-
-    <!-- Notes -->
-    <textarea id="notes-{{ loc.id }}" name="notes"  placeholder="Notes" 
-              style="width: 190px; height:80px; border: 2px solid #000; padding: 4px; border-radius: 4px;"></textarea><br>
-
-
-        <div style="text-align: center; margin-top: 10px;">
-      
-      <button 
-          onclick="alert('Button clicked!')"
-                  style="background-color: gold; color: black; border: 2px solid #b8860b; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                  In the bag 🏔️
-                </button>
-              </div>
-            </div>
-          `;
+    {% if loc.date is none %}
+    var icon = '/static/images/peak.png'
+    {% else %}
+    var icon = `/static/images/{{ user }}.png`
+    {% endif %}
     
-      L.popup()
-        .setLatLng(e.latlng)
-        .setContent(popupContent)
-        .openOn(map);
-    });
+    
+    var peakIcon = L.icon({
 
-{% endfor %}
+      iconUrl: icon,
+      iconSize: [18, 18],
+      iconAnchor: [10, 10],
+      popupAnchor: [0, -10]
+      })
+
+      L.marker([{{ loc.latitude }}, {{ loc.longitude }}], { icon: peakIcon })
+        .addTo(map)
+        .bindTooltip({{ loc.name|tojson }}, {
+          permanent: false,
+          direction: 'top',
+          offset: [-1, -7]
+        })
+        .on('click', function (e) {
+        const popupContent = `
+                <div style="
+              width: 280px;
+              border-radius: 8px;
+              font-family: Arial, sans-serif;
+              padding: 1px;">
+            <h3 style="
+                margin: 0 0 10px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+                text-align: center;">
+
+              {% if loc.date is none %}
+              <a href="{{ loc.whl_url }}" target="_blank">{{ loc.name|e }}</a>
+              {% else %}
+              🏔️👜<a href="{{ loc.whl_url }}" target="_blank">{{ loc.name|e }}</a>🏔️&nbsp;👜
+              {% endif %}
+              
+              </h3>
+
+              <p style = "font-size: 12px;"> {{ loc.description }} </p>
+
+        <div style="
+          display: grid;
+          grid-template-columns: max-content 1fr;
+          row-gap: 4px;
+          column-gap: 8px;
+          font-size: 13px;
+          color: #000;">
+
+            <strong>Height:</strong>
+            <span>{{ loc.height }}</span>
+
+            <strong>Region:</strong>
+            <span>{{ loc.region }}</span>
+
+            {% if loc.date is not none %}
+
+            <hr style="border: none; height: 1px; background: grey; margin: 10px 0;">
+            <hr>
+            
+            <strong>Date:</strong>
+            <span>{{ loc.date }}</span>
+            
+            {% if loc.distance is not none %}
+            <strong>Distance:</strong>
+            <span>{{ loc.distance }}</span>
+            {% endif %}
+            
+            {% if loc.friends is not none %}
+            <strong>Friends:</strong>
+            <span>{{ loc.friends }}</span>
+            {% endif %}
+            
+            {% if loc.notes is not none %}
+            <strong>Notes:</strong>
+            <span>{{ loc.notes }} </span>
+            {% endif %}
+
+            {% endif %}
+        </div>
+
+        <p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>
+          `;
+
+          L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+        });
+
+    {% endfor %}
 
 </script>
 
@@ -306,11 +318,12 @@ window.addEventListener('resize', () => {
       toggleBtn.style.left = "10px";  // adjust position when collapsed
       toggleBtn.textContent = "Show table";
     } else {
-      toggleBtn.style.left = "170px";
+      toggleBtn.style.left = "160px";
       toggleBtn.textContent = "Hide table";
     }
   });
 </script>
+
 
 </body>
 </html>
