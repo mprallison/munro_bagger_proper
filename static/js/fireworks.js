@@ -1,88 +1,92 @@
-const fireworks = [];
-const particles = [];
+export function startFireworksOnMap(map) {
+    // Append canvas to Leaflet overlayPane
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    map.getPane('overlayPane').appendChild(canvas);
+    const ctx = canvas.getContext('2d');
 
-function random(min, max) {
-  return Math.random() * (max - min) + min;
+    function resizeCanvas() {
+        const size = map.getSize();
+        canvas.width = size.x;
+        canvas.height = size.y;
+    }
+
+    resizeCanvas();
+    map.on('resize', resizeCanvas);
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            const angle = Math.random() * 2 * Math.PI;
+            const speed = Math.random() * 5 + 2;
+            this.velocity = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
+            this.life = 2;
+            this.alpha = 1;
+        }
+
+        update(deltaTime) {
+            this.x += this.velocity.x;
+            this.y += this.velocity.y;
+            this.life -= deltaTime;
+            this.alpha = Math.max(this.life / 2, 0);
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    const fireworks = [];
+
+    function createRandomFireworks() {
+        const colors = ["red", "yellow", "blue", "orange", "green", "purple"];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height / 2;
+
+        for (let i = 0; i < 50; i++) {
+            fireworks.push(new Particle(x, y, color));
+        }
+    }
+
+    let lastTime = 0;
+    function animate(timestamp) {
+        const deltaTime = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        fireworks.forEach(p => p.update(deltaTime));
+        fireworks.forEach(p => p.draw());
+
+        for (let i = fireworks.length - 1; i >= 0; i--) {
+            if (fireworks[i].life <= 0) fireworks.splice(i, 1);
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+
+    // Fireworks for 2 seconds
+    const interval = setInterval(createRandomFireworks, 200);
+    setTimeout(() => {
+        clearInterval(interval);
+        setTimeout(() => {
+            canvas.remove();
+        }, 2000);
+    }, 2000);
 }
 
-class Firework {
-  constructor() {
-    this.x = random(0, cw);
-    this.y = ch;
-    this.targetY = random(ch/4, ch/2);
-    this.color = `hsl(${random(0,360)},100%,50%)`;
-    this.speed = random(4, 7);
-    this.exploded = false;
-  }
-  update() {
-    this.y -= this.speed;
-    if (this.y <= this.targetY && !this.exploded) {
-      this.explode();
-      this.exploded = true;
-    }
-  }
-  draw() {
-    if (!this.exploded) {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.fill();
-    }
-  }
-  explode() {
-    for (let i = 0; i < 50; i++) {
-      particles.push(new Particle(this.x, this.y, this.color));
-    }
-  }
-}
-
-class Particle {
-  constructor(x, y, color) {
-    this.x = x;
-    this.y = y;
-    this.color = color;
-    this.speed = random(1,6);
-    this.angle = random(0, Math.PI * 2);
-    this.alpha = 1;
-    this.friction = 0.95;
-  }
-  update() {
-    this.x += Math.cos(this.angle) * this.speed;
-    this.y += Math.sin(this.angle) * this.speed;
-    this.speed *= this.friction;
-    this.alpha -= 0.02;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.alpha;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-}
-
-let stopFireworks = false;
-setTimeout(() => stopFireworks = true, 4000); // stop after 3 seconds
-
-function animate() {
-  requestAnimationFrame(animate);
-  // Clear canvas with partial transparency to create trails
-  ctx.clearRect(0, 0, cw, ch);
-
-  if (!stopFireworks && Math.random() < 0.05) fireworks.push(new Firework());
-
-  for (let i = fireworks.length - 1; i >= 0; i--) {
-    fireworks[i].update();
-    fireworks[i].draw();
-    if (fireworks[i].exploded) fireworks.splice(i, 1);
-  }
-
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();
-    particles[i].draw();
-    if (particles[i].alpha <= 0) particles.splice(i, 1);
-  }
-};
-
-window.animate = animate;
+window.startFireworksOnMap = startFireworksOnMap;
