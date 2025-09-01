@@ -6,9 +6,9 @@ from routes.login import *
 from werkzeug.routing import BuildError
 from werkzeug.exceptions import MethodNotAllowed
 
-
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
+
 DB = "database.db"
 
 @app.route("/")
@@ -43,12 +43,11 @@ def login():
 def signup():
 
     if request.method == "POST":
-
         user_name = request.form["user_name"]
         password = request.form["password"]
        
     response = add_user(user_name, password)
-    print(response)
+
     if response == 200:
         message, color = "Log in and 🏔️→👜", "#00D100"
     else:
@@ -60,6 +59,7 @@ def signup():
 
 @app.route('/logout')
 def logout():
+
     session.clear()
     return redirect(url_for("index"))
 
@@ -83,17 +83,28 @@ def user_profile_edit(user):
 @app.route("/<user>/view")
 def user_profile_view(user):
 
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute(f"""SELECT COUNT(*) FROM users WHERE user_name = '{user}';""")
+    count = cursor.fetchone()[0]
+
+    conn.commit()
+    conn.close()
+
+    if count == 0:
+        #return "no user exists by this name. maybe one did once. maybe they're in purgatory now <br>Beauty will save the world.<br><br><pre>             , Splash!<br>Silence again."
+        return render_template("lost_map.html")
+
     log_data, bag_total = get_user_complete_log(user)
 
     return render_template("user_map_view.html", log_data=log_data, user=user, bag_total=bag_total)
 
 @app.route('/addBag', methods=['POST'])
 def add_bag():
+
     data = request.json
 
     data["user_id"] = session['user_id']
-
-    print(data)
 
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
@@ -127,6 +138,7 @@ def add_bag():
 
 @app.route('/delBag', methods=['POST'])
 def del_bag():
+
     data = request.json
 
     data["user_id"] = session['user_id']
@@ -157,7 +169,7 @@ def del_bag():
 
     return jsonify(message="OK", coords=munro_coords), 200
 
-
 @app.errorhandler(MethodNotAllowed)
 def handle_405(e):
+
     return redirect(url_for("index"))
