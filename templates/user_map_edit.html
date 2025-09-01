@@ -29,7 +29,6 @@
   import { startFireworksOnMap } from '/static/js/fireworks.js';
 </script>
 
-
 <div id="map"></div>
 
 <!--add sidebar table with color for bags-->
@@ -148,8 +147,8 @@ loadBagIcon().then(bagIcon => {
                   ${loc.date === null
                     ? `<form>
                         <input type="hidden" id="munro-id" value="${loc.munro_id}">
-                        <input type="date" id="date" name="date" class="form-element" style="width:130px;height:25px;" required>
-                        <textarea id="distance" name="distance" placeholder="Distance" class="form-element" style="width:130px;height:25px;margin-top:10px;"></textarea>
+                        <input type="date" id="date" name="date" class="form-element" style="width:100px;height:25px;" required>
+                        <textarea id="distance" name="distance" placeholder="Distance" class="form-element" style="width:100px;height:25px;margin-top:10px;"></textarea>
                         <textarea id="friends" name="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
                         <textarea id="notes" name="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
                         
@@ -162,7 +161,6 @@ loadBagIcon().then(bagIcon => {
                       </form>`
             
                     : `<div>
-                  
                         <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
                           <strong>Date:</strong><span>${loc.date}</span>
                           ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
@@ -178,16 +176,16 @@ loadBagIcon().then(bagIcon => {
                           <form style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
                             <input type="hidden" id="munro-id" value="${loc.munro_id}">
 
-                            <label style="white-space:nowrap; display:flex; align-items:center; gap:0px;font-size: 12px; font-color:black; font-weight:bold;"">
+                            <label style="display:flex; align-items:center; gap:0px;font-size: 10px; font-color:black; font-weight:bold;"">
                               <input type="checkbox" name="conf" required>
                               Confirm
                             </label>
 
                             <button id="del-munro" type="submit"
-                              style="white-space:nowrap; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:4px 8px; cursor:pointer;">
-                              Delete bag 😧
+                              style="white-space:nowrap; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
+                              Delete 😧
                             </button>
-                          </form>
+                          </form>                   
                         </div>
 
                         <p style="text-align:right; font-size:10px;">©2006-2025 Walkhighlands</p>
@@ -203,5 +201,11 @@ loadBagIcon().then(bagIcon => {
 });
 });
 </script>
+
+<div id="navigate">
+  <button style="width: 80px; margin-top: 10px;text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
+  <button style="width: 80px; margin-top: 10px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+</div>
+
 </body>
 </html>

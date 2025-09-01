@@ -3,6 +3,9 @@ from markupsafe import escape
 import sqlite3
 from routes.munro_data import *
 from routes.login import * 
+from werkzeug.routing import BuildError
+from werkzeug.exceptions import MethodNotAllowed
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -35,7 +38,7 @@ def login():
     else:
         locations = get_munro_data()
         return render_template("index.html", locations=locations, error="Invalid credentials")
-    
+
 @app.route("/signup", methods=["POST"])
 def signup():
 
@@ -44,7 +47,6 @@ def signup():
         user_name = request.form["user_name"]
         password = request.form["password"]
        
-
     response = add_user(user_name, password)
     print(response)
     if response == 200:
@@ -56,17 +58,27 @@ def signup():
 
     return render_template("index.html", show_signup=True, locations=locations, message=message, color=color)
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
 @app.route("/<user>/edit")
 def user_profile_edit(user):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    
-    if session["user_name"] != user:
-        return redirect(url_for("/<user>/edit", user=session["user_name"]))
-    
-    log_data, bag_total = get_user_complete_log(user)
 
-    return render_template("user_map_edit.html", log_data=log_data, user=user, bag_total=bag_total)
+    try:
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        
+        if session["user_name"] != user:
+            return redirect(url_for("/<user>/edit", user=session["user_name"]))
+        
+        log_data, bag_total = get_user_complete_log(user)
+
+        return render_template("user_map_edit.html", log_data=log_data, user=user, bag_total=bag_total)
+    
+    except BuildError:
+        return redirect(url_for("index"))
 
 @app.route("/<user>/view")
 def user_profile_view(user):
@@ -146,9 +158,6 @@ def del_bag():
     return jsonify(message="OK", coords=munro_coords), 200
 
 
-@app.route("/leaderboard")
-def build_leaderboard():
-
-    baggers, data = return_table_data()
-
-    return render_template('leaderboard.html', baggers=baggers, data=data)
+@app.errorhandler(MethodNotAllowed)
+def handle_405(e):
+    return redirect(url_for("index"))

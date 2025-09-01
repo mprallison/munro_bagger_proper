@@ -10,18 +10,16 @@ document.addEventListener('submit', async function(event) {
 
     const buttonId = event.submitter.id;
 
-    console.log(buttonId)
-
     if (buttonId === 'sub-munro') {
 
         const formEl = event.target;
         const formData = {
-                    munro_id: formEl.querySelector('[id="munro-id"]')?.value,
-                    date: formEl.querySelector('[id="date"]')?.value,
-                    distance: formEl.querySelector('[id="distance"]')?.value || null,
-                    friends: formEl.querySelector('[id="friends"]')?.value || null,
-                    notes: formEl.querySelector('[id="notes"]')?.value || null
-                    }
+                        munro_id: formEl.querySelector('[id="munro-id"]')?.value,
+                        date: formEl.querySelector('[id="date"]')?.value,
+                        distance: formEl.querySelector('[id="distance"]')?.value || null,
+                        friends: formEl.querySelector('[id="friends"]')?.value || null,
+                        notes: formEl.querySelector('[id="notes"]')?.value || null
+                        }
 
         try {
             const response = await fetch('/addBag', {
@@ -39,6 +37,7 @@ document.addEventListener('submit', async function(event) {
             } catch(err) {
                 console.error("Error submitting form:", err);
             }
+        
         } else if (buttonId === 'del-munro') {
 
         const data = {
@@ -59,12 +58,11 @@ document.addEventListener('submit', async function(event) {
             } catch (err) {
                 console.error('Error submitting form:', err);
                     }
-        }  else {
+        
+        } else {
         console.log("error")
         };
-
-
-});
+    });
 
 
 window.addEventListener('DOMContentLoaded', () => {

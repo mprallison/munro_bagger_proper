@@ -25,4 +25,6 @@ L.tileLayer(`https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?k
   className: 'os-tiles'
 }).addTo(map);
 
+window.layerGroup = L.layerGroup().addTo(map);
+
 window.map = map;

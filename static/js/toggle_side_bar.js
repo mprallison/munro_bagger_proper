@@ -10,7 +10,7 @@ if (sidebar.classList.contains("collapsed")) {
     toggleBtn.style.left = "10px";  // adjust position when collapsed
     toggleBtn.textContent = "Show table";
 } else {
-    toggleBtn.style.left = "160px";
+    toggleBtn.style.left = "170px";
     toggleBtn.textContent = "Hide table";
 }
 });

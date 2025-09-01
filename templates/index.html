@@ -74,8 +74,8 @@
   <!-- Login Form -->
   <form id="login-form" action="/login" method="POST" 
         style="display: {{ 'none' if show_signup else 'block' }};">
-    <input type="text" name="user_name" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
+    <input type="text" name="user_name" placeholder="Username" required style="width:120px">
+    <input type="password" name="password" placeholder="Password" required style="width:120px">
     <button type="submit">Login</button>
     <div id="login-error" style="color: #D10000;">{{ error|default('') }}</div>
   </form>
@@ -83,8 +83,8 @@
   <!-- Signup Form -->
   <form id="signup-form" action="/signup" method="POST" 
         style="display: {{ 'block' if show_signup else 'none' }};">
-    <input type="text" name="user_name" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
+    <input type="text" name="user_name" placeholder="Username" required style="width:120px">
+    <input type="password" name="password" placeholder="Password" required style="width:120px">
     <button type="submit">Sign Up</button>
     <div id="sign-up-error" style="color:{{ color }};">{{ message|default('') }}</div>
   </form>

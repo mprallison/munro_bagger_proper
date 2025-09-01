@@ -11,7 +11,9 @@
 
   <script type="module" src="/static/js/search_map_sidebar.js"></script>
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
+  <script type="module" src="/static/js/filter_map_sidebar.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
+  <script type="module" src="/static/js/bag_del_munro.js"></script>
 
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -22,6 +24,7 @@
 </head>
 
 <body>
+
 <div id="map"></div>
 
 <!--add sidebar table with color for bags-->
@@ -32,18 +35,25 @@
       <th style="text-align: left;">
         Name ({{ bag_total }}/282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
+
+        <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
+          <select style="width: 60px;" id="idFilter">
+            <option value="">all</option>
+          </select>
+          <span id="countDisplay" style="font-weight:bold;"></span>
+        </div>
       </th>
 
-    <tbody style="display:block; margin-top: 30px;">
-    <tbody>
+    <tbody style="display:block; margin-top: 55px;">
       {% for loc in log_data %}
         <tr>
-          <td>
             {% if loc.date is none %}
+            <td id="gap" data-munro-id="{{loc.munro_id}}"> 
               <button onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
               {{ loc.name }}
             </button>
             {% else %}
+            <td id="{{loc.date[:4]}}" data-munro-id="{{loc.munro_id}}"> 
             <button style = "background-color: #93C572;"
                   onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
               {{ loc.name }}
@@ -63,107 +73,27 @@
 <button id="toggleSidebar">Hide table</button>
 
 <!--add base map-->
-<script src="/static/js/base_map.js"></script>
+<script src="/static/js/base_map.js">
+console.log(window.layerGroup)
 
-<script>
-//convert jinja to js to avoid template with js combo nightmare
-const locations = {{ log_data|tojson|safe }};
-
-//gap icon
-const gapIcon = L.icon({
-    iconUrl: '/static/images/gap.png',
-    iconSize: [18, 18],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-});
-
-//check for user image else use generic bag.png
-const userIconUrl = '/static/images/{{ user }}.png';
-const defaultIconUrl = '/static/images/bag.png';
-
-
-function loadBagIcon() {
-    return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => resolve(
-          L.icon({
-            iconUrl: userIconUrl,
-            iconSize: [18, 18],
-            iconAnchor: [10, 10],
-            popupAnchor: [0, -10]
-        }));
-        img.onerror = () => resolve(
-          L.icon({
-            iconUrl: defaultIconUrl,
-            iconSize: [18, 18],
-            iconAnchor: [10, 10],
-            popupAnchor: [0, -10]
-        }));
-        img.src = userIconUrl;
-    });
-}
-
-// check image path then build markers
-loadBagIcon().then(bagIcon => {
-    locations.forEach(loc => {
-        const peakIcon = loc.date === null ? gapIcon : bagIcon;
-
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: peakIcon })
-            .addTo(map)
-            .bindTooltip(loc.name,
-                      {permanent:false,
-                        direction:'top',
-                        offset:[-1,-7]
-                      })
-            //generate popup content for bag or gap munro
-            .on('click', e => {
-                const popupContent = `
-                <div id=pop-up>
-                  <h3>
-                    ${loc.date === null
-                      ? `${loc.name}`
-
-                      : `🏔️&#8288;👜${loc.name}🏔️&#8288;👜`}
-                  </h3>
-                  
-                  <p style="font-size:12px;">${loc.description} <a href="${loc.whl_url}" target="_blank">More</a></p>
-
-                  <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                    <strong>Height:</strong><span>${loc.height}</span>
-                    <strong>Region:</strong><span>${loc.region}</span>
-                  </div>
-
-                  ${loc.date === null
-                    ? 
-                      '<p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>'
-                      
-                    : 
-                    
-                      `<div style="grid-column: 1 / -1;">
-                          <hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
-                      </div>
-                  
-                      
-                      <div>
-                  
-                        <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                          <strong>Date:</strong><span>${loc.date}</span>
-                          ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
-                          ${loc.friends ? `<strong>Friends:</strong><span>${loc.friends}</span>` : ''}
-                          ${loc.notes ? `<strong>Notes:</strong><span>${loc.notes}</span>` : ''}
-                        </div>
-                        <p style="text-align:right; font-size:10px;">©2006-2025 Walkhighlands</p>
-                                        
-                      </div>`}
-                </div>
-                `;
-              L.popup()
-                .setLatLng(e.latlng)
-                .setContent(popupContent)
-                .openOn(map)              
-                  });
-});
-});
 </script>
+
+<script type="module">
+  import { addMapMarkers } from '/static/js/populate_markers.js';
+//convert jinja to js to avoid template with js combo nightmare
+window.locations = {{ log_data|tojson|safe }};
+
+window.userIconUrl = '/static/images/{{ user }}.png';
+window.defaultIconUrl = '/static/images/bag.png';
+window.gapIconUrl = '/static/images/gap.png'
+
+addMapMarkers(window.locations);
+</script>
+
+<div id="navigate">
+  <button style="width: 80px; margin-top: 10px;text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+  <button style="width: 80px; margin-top: 10px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+</div>
+
 </body>
 </html>
