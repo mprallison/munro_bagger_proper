@@ -92,7 +92,6 @@ def user_profile_view(user):
     conn.close()
 
     if count == 0:
-        #return "no user exists by this name. maybe one did once. maybe they're in purgatory now <br>Beauty will save the world.<br><br><pre>             , Splash!<br>Silence again."
         return render_template("lost_map.html")
 
     log_data, bag_total = get_user_complete_log(user)
