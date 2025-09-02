@@ -1,8 +1,7 @@
-/static/js/os_apikey
 database.db
 data/
-/static/images/
-images/!munro.png
+static/images/*
+static/images/!munro.png
 images/!peak.png
 images/!gap.png
 build_db.ipynb
