@@ -1,3 +1,5 @@
+const apiKey = window.apiKey;
+
  var map = L.map('map', {
     center: [57.08, -4.02],
     zoom: 7,
@@ -5,8 +7,6 @@
     maxZoom: 13,
     zoomControl: false 
   });
-
-const apiKey = "X5uEx0qVA9UPMJDgFfyjHNWsGNuhyOuF";
 
 // Base layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

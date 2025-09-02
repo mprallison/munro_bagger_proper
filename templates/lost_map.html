@@ -17,17 +17,16 @@
 <style>
 #a-div {
     position: fixed;   
-    top: 20px;
-    right: 20px;
+    top: 60px;
+    right: 60px;
     padding: 10px 20px;
-    background-color: grey;
+    background-color: #484848;
     color: white;
     border: 2px solid black;
     border-radius: 5px;
-    cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     text-align: top;
-    width: 525px;
+    width: 300px;
     height: 130px;
   }
 
@@ -36,9 +35,31 @@
 
 <body>
 <div id="map"></div>
-<div id="a-div"><p>no user exists by this name. maybe one did once. maybe they're in purgatory now<br>Beauty will save the world.<br><br><pre>             , Splash!<br>Silence again.</p></div>
+<div id="a-div"><p>no user exists by this name. maybe one did once.<br>maybe they're in purgatory.<br><br><pre>    Beauty will save the world<br><br><pre></div>
 
-<script src="/static/js/base_map.js"></script>
+<script>
+  const fixedCenter = [58.225, 68.28]
+  const map = L.map('map', {
+    center: fixedCenter,
+    zoom: 12,
+    minZoom: 3,
+    maxZoom: 14,
+    dragging: false,      
+    zoomControl: false
+  });
+
+  // Override zoom so center stays fixed
+  map.on('zoom', () => {
+    map.setView(fixedCenter, map.getZoom(), { animate: false });
+  });
+
+// Base layer
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+
+  attribution: 'Tiles &copy; Esri &mdash; Sources: Esri, DeLorme, HERE, TomTom, Intermap, increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), swisstopo, MapmyIndia, and the GIS User Community. Powered by Esri'
+}).addTo(map);
+
+</script>
 
 </body>
 </html>

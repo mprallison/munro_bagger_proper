@@ -17,6 +17,8 @@ export function startFireworksOnMap(map) {
     resizeCanvas();
     map.on('resize', resizeCanvas);
 
+    const emojiOptions = ['⛰️', '👜'];
+
     class Particle {
         constructor(x, y, color) {
             this.x = x;
@@ -42,7 +44,8 @@ export function startFireworksOnMap(map) {
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-            ctx.fill();
+            //ctx.fill();
+            ctx.fillText('⛰️', this.x, this.y);
             ctx.restore();
         }
     }

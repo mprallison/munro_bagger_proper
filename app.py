@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-from markupsafe import escape
+#from markupsafe import escape
 import sqlite3
 from routes.munro_data import *
 from routes.login import * 
@@ -67,14 +67,15 @@ def logout():
 def user_profile_edit(user):
 
     try:
+        #redirect to home if no user is logged in
         if "user_id" not in session:
             return redirect(url_for("login"))
         
-        if session["user_name"] != user:
-            return redirect(url_for("/<user>/edit", user=session["user_name"]))
+        else:
+            #if user is logged in, redirect to user edit page for any input user
+            user=session["user_name"]
+            log_data, bag_total = get_user_complete_log(user)
         
-        log_data, bag_total = get_user_complete_log(user)
-
         return render_template("user_map_edit.html", log_data=log_data, user=user, bag_total=bag_total)
     
     except BuildError:
@@ -109,24 +110,24 @@ def add_bag():
     cursor = conn.cursor()
 
     insert_query = """
-    INSERT INTO bags (munro_id, user_id, date, distance, friends, notes)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """
+                   INSERT INTO bags (munro_id, user_id, date, distance, friends, notes)
+                   VALUES (?, ?, ?, ?, ?, ?)
+                   """
 
     cursor.execute(insert_query, (
-        data["munro_id"],
-        data["user_id"],
-        data["date"],
-        data["distance"],
-        data["friends"],
-        data["notes"]
-    ))
+                data["munro_id"],
+                data["user_id"],
+                data["date"],
+                data["distance"],
+                data["friends"],
+                data["notes"]
+            ))
 
     cursor.execute(f"""
-    SELECT latitude, longitude
-    FROM munros
-    WHERE munro_id = '{data["munro_id"]}'
-    """)
+                    SELECT latitude, longitude
+                    FROM munros
+                    WHERE munro_id = '{data["munro_id"]}'
+                    """)
 
     munro_coords = cursor.fetchone() 
 
@@ -146,9 +147,9 @@ def del_bag():
     cursor = conn.cursor()
 
     del_query = """
-    DELETE FROM bags
-    WHERE munro_id = ? AND user_id = ?;
-    """
+                DELETE FROM bags
+                WHERE munro_id = ? AND user_id = ?;
+                """
 
     cursor.execute(del_query, (
         data["munro_id"],
@@ -156,10 +157,10 @@ def del_bag():
     ))
 
     cursor.execute(f"""
-    SELECT latitude, longitude
-    FROM munros
-    WHERE munro_id = '{data["munro_id"]}'
-    """)
+                    SELECT latitude, longitude
+                    FROM munros
+                    WHERE munro_id = '{data["munro_id"]}'
+                    """)
 
     munro_coords = cursor.fetchone() 
 
@@ -172,3 +173,8 @@ def del_bag():
 def handle_405(e):
 
     return redirect(url_for("index"))
+
+@app.errorhandler(404)
+def page_not_found(error):
+
+    return "<h1 style='text-align: center;'>404</h1><p style='text-align: center;'>The page you are looking for does not exist. Do you exist?</p><br><br><br><pre>       splash! Silence again.", 404

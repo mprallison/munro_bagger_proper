@@ -22,7 +22,7 @@ def add_user(user_name, password):
     cur.execute(f"SELECT COUNT(*) FROM users;")
     user_count = cur.fetchone()[0]
 
-    new_user_id  = f"m{user_count:03}"
+    new_user_id  = f"u{user_count:04}"
 
     insert_user = """
     INSERT INTO users (user_id, user_name, password)
