@@ -1,7 +1,7 @@
-static/js/os_apikey
+/static/js/os_apikey
 database.db
 data/
-images/
+/static/images/
 images/!munro.png
 images/!peak.png
 images/!gap.png
