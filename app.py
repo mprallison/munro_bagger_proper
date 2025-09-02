@@ -5,9 +5,15 @@ from routes.munro_data import *
 from routes.login import * 
 from werkzeug.routing import BuildError
 from werkzeug.exceptions import MethodNotAllowed
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+os_apikey = os.getenv("OSMAP_APIKEY")
 
 DB = "database.db"
 
@@ -18,7 +24,7 @@ def index():
 
     locations = get_munro_data()
 
-    return render_template('index.html', locations=locations)
+    return render_template('index.html', locations=locations, os_apikey=os_apikey)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -37,7 +43,7 @@ def login():
         return redirect(url_for("user_profile_edit", user=session["user_name"]))
     else:
         locations = get_munro_data()
-        return render_template("index.html", locations=locations, error="Invalid credentials")
+        return render_template("index.html", locations=locations, os_apikey=os_apikey, error="Invalid credentials")
 
 @app.route("/signup", methods=["POST"])
 def signup():
@@ -55,7 +61,7 @@ def signup():
     
     locations = get_munro_data()
 
-    return render_template("index.html", show_signup=True, locations=locations, message=message, color=color)
+    return render_template("index.html", show_signup=True, locations=locations, os_apikey=os_apikey, message=message, color=color)
 
 @app.route('/logout')
 def logout():
@@ -76,7 +82,7 @@ def user_profile_edit(user):
             user=session["user_name"]
             log_data, bag_total = get_user_complete_log(user)
         
-        return render_template("user_map_edit.html", log_data=log_data, user=user, bag_total=bag_total)
+        return render_template("user_map_edit.html", log_data=log_data,  os_apikey=os_apikey, user=user, bag_total=bag_total)
     
     except BuildError:
         return redirect(url_for("index"))
@@ -97,7 +103,7 @@ def user_profile_view(user):
 
     log_data, bag_total = get_user_complete_log(user)
 
-    return render_template("user_map_view.html", log_data=log_data, user=user, bag_total=bag_total)
+    return render_template("user_map_view.html", log_data=log_data,  os_apikey=os_apikey, user=user, bag_total=bag_total)
 
 @app.route('/addBag', methods=['POST'])
 def add_bag():

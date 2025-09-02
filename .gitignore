@@ -6,3 +6,5 @@ images/!munro.png
 images/!peak.png
 images/!gap.png
 build_db.ipynb
+*.ipynb_checkpoints
+.env

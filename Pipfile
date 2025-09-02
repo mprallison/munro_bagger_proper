@@ -7,9 +7,8 @@ name = "pypi"
 flask = "*"
 pandas = "*"
 jinja2 = "*"
-lab = "*"
 jupyterlab = "*"
-livereload = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

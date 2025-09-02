@@ -1,4 +1,4 @@
-const apiKey = window.apiKey;
+const apiKey = window.API_KEY 
 
  var map = L.map('map', {
     center: [57.08, -4.02],
