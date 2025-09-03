@@ -25,7 +25,8 @@ def get_user_complete_log(user_name):
     conn = sqlite3.connect("database.db")
     df = pd.read_sql_query(f"SELECT * FROM munros", conn)
     
-    complete_log_query = f"""SELECT m.munro_id, m.name, m.region, m.height, m.description, m.whl_url, m.latitude, m.longitude, b.user_id, b.date, b.distance, b.friends, b.notes
+    complete_log_query = f"""SELECT m.munro_id, m.name, m.region, m.height, m.description, m.whl_url, m.latitude, m.longitude, 
+                        b.user_id, b.date, b.distance, b.friends, b.notes, b.private
                         FROM munros m
                         LEFT JOIN users u
                         ON u.user_name = '{user_name}'

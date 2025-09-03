@@ -110,14 +110,16 @@ def add_bag():
 
     data = request.json
 
+    print(data)
+
     data["user_id"] = session['user_id']
 
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
     insert_query = """
-                   INSERT INTO bags (munro_id, user_id, date, distance, friends, notes)
-                   VALUES (?, ?, ?, ?, ?, ?)
+                   INSERT INTO bags (munro_id, user_id, date, distance, friends, notes, private)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)
                    """
 
     cursor.execute(insert_query, (
@@ -126,7 +128,8 @@ def add_bag():
                 data["date"],
                 data["distance"],
                 data["friends"],
-                data["notes"]
+                data["notes"],
+                data["private"]
             ))
 
     cursor.execute(f"""

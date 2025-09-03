@@ -13,14 +13,16 @@ document.addEventListener('submit', async function(event) {
     if (buttonId === 'sub-munro') {
 
         const formEl = event.target;
+        
         const formData = {
                         munro_id: formEl.querySelector('[id="munro-id"]')?.value,
                         date: formEl.querySelector('[id="date"]')?.value,
                         distance: formEl.querySelector('[id="distance"]')?.value || null,
                         friends: formEl.querySelector('[id="friends"]')?.value || null,
-                        notes: formEl.querySelector('[id="notes"]')?.value || null
+                        notes: formEl.querySelector('[id="notes"]')?.value || null,
+                        private: formEl.querySelector('[id="private"]')?.value || null
                         }
-
+   
         try {
             const response = await fetch('/addBag', {
                 method: 'POST',
@@ -68,7 +70,7 @@ document.addEventListener('submit', async function(event) {
 window.addEventListener('DOMContentLoaded', () => {
     const coords = JSON.parse(localStorage.getItem('prev_munro_coords'));
     if (coords) {
-        console.log("Coordinates after reload:", coords);
+
         localStorage.removeItem('prev_munro_coords');
 
         if (window.map && typeof goToLocation === 'function') {

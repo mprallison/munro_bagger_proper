@@ -149,10 +149,11 @@ loadBagIcon().then(bagIcon => {
                   ${loc.date === null
                     ? `<form>
                         <input type="hidden" id="munro-id" value="${loc.munro_id}">
-                        <input type="date" id="date" name="date" class="form-element" style="width:100px;height:25px;" required>
-                        <textarea id="distance" name="distance" placeholder="Distance" class="form-element" style="width:100px;height:25px;margin-top:10px;"></textarea>
-                        <textarea id="friends" name="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
-                        <textarea id="notes" name="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
+                        <input type="date" id="date" class="form-element" style="width:120px;height:25px;" required>
+                        <textarea id="distance" placeholder="Distance" class="form-element" style="width:120px;height:25px;margin-top:10px;"></textarea>
+                        <textarea id="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
+                        <textarea id="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
+                        <textarea id="private" placeholder="Info I don't want to share" class="form-element" margin-top:10px;"></textarea>
                         
                         <div style="text-align:center; margin-top:10px;">
                           <button id="sub-munro" type="submit">
@@ -168,6 +169,7 @@ loadBagIcon().then(bagIcon => {
                           ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
                           ${loc.friends ? `<strong>Friends:</strong><span>${loc.friends}</span>` : ''}
                           ${loc.notes ? `<strong>Notes:</strong><span>${loc.notes}</span>` : ''}
+                          ${loc.private ? `<strong>Private:</strong><span>${loc.private}</span>` : ''}
                         </div>
 
                         <div style="grid-column: 1 / -1;">
