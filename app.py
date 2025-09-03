@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 #from markupsafe import escape
 import sqlite3
-from routes.munro_data import *
+from routes.data_queries import *
 from routes.login import * 
 from werkzeug.routing import BuildError
 from werkzeug.exceptions import MethodNotAllowed
@@ -83,6 +83,27 @@ def user_profile_edit(user):
             log_data, bag_total = get_user_complete_log(user)
         
         return render_template("user_map_edit.html", log_data=log_data,  os_apikey=os_apikey, user=user, bag_total=bag_total)
+    
+    except BuildError:
+        return redirect(url_for("index"))
+    
+@app.route("/<user>/profile")
+def user_profile_page(user):
+
+    try:
+        #redirect to home if no user is logged in
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        
+        else:
+            #if user is logged in, redirect to user edit page for any input user
+            user=session["user_name"]
+
+            log_data, bag_total = get_user_complete_log(user)
+            other_users = get_users()
+            other_users = [u for u in other_users if u['user_name'] != user]
+  
+        return render_template("user_profile.html", log_data=log_data, user=user, bag_total=bag_total, other_users=other_users)
     
     except BuildError:
         return redirect(url_for("index"))
@@ -178,6 +199,26 @@ def del_bag():
 
     return jsonify(message="OK", coords=munro_coords), 200
 
+
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    # Get file and user from FormData
+    file = request.files.get('file')
+    user = request.form.get('user')
+
+    print(user)
+
+    if not file or not user:
+        return jsonify({"error": "File or user missing"}), 400
+
+    upload_folder = "static/images/"
+    filename = f"{user}.png"
+    print(filename)
+    path = os.path.join(upload_folder, filename)
+    file.save(path)
+
+    return jsonify({"message": "File uploaded", "url": f"/{upload_folder}/{filename}"}), 200
+
 @app.errorhandler(MethodNotAllowed)
 def handle_405(e):
 
@@ -186,4 +227,7 @@ def handle_405(e):
 @app.errorhandler(404)
 def page_not_found(error):
 
-    return "<h1 style='text-align: center;'>404</h1><p style='text-align: center;'>The page you are looking for does not exist. Do you exist?</p><br><br><br><pre>       splash! Silence again.", 404
+    return "<div style='font-family: Courier New'; letter-spacing: 0.02em;'>" \
+    "<h1 style='text-align: center;'>404</h1><p style='text-align: center;'>" \
+    "The page you are looking for does not exist. Do you exist? Are you sure?</p>" \
+    "<br><br><br><br><br>&nbsp;&nbsp;&nbsp;........... splash! Silence again.", 404

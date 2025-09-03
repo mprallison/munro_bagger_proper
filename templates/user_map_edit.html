@@ -153,7 +153,7 @@ loadBagIcon().then(bagIcon => {
                         <textarea id="distance" placeholder="Distance" class="form-element" style="width:120px;height:25px;margin-top:10px;"></textarea>
                         <textarea id="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
                         <textarea id="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
-                        <textarea id="private" placeholder="Info I don't want to share" class="form-element" margin-top:10px;"></textarea>
+                        <textarea id="private" placeholder="Any info I don't want public" class="form-element" margin-top:10px;"></textarea>
                         
                         <div style="text-align:center; margin-top:10px;">
                           <button id="sub-munro" type="submit">
@@ -207,8 +207,9 @@ loadBagIcon().then(bagIcon => {
 </script>
 
 <div id="navigate">
-  <button style="width: 80px; margin-top: 10px;text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
-  <button style="width: 80px; margin-top: 10px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
 </div>
 
 </body>

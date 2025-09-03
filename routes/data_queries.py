@@ -44,3 +44,19 @@ def get_user_complete_log(user_name):
     bag_total = str(len(bags_df[~bags_df["date"].isnull()]))
 
     return bag_data, bag_total
+
+def get_users():
+
+    import sqlite3
+    import pandas as pd
+
+    db_file = "database.db"
+
+    conn = sqlite3.connect("database.db")
+    user_df = pd.read_sql_query(f"SELECT user_name FROM users", conn)
+
+    conn.close()
+
+    all_users = user_df.to_dict(orient='records')
+
+    return all_users

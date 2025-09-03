@@ -15,8 +15,6 @@
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
   <script type="module" src="/static/js/filter_map_sidebar.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
-  <script type="module" src="/static/js/bag_del_munro.js"></script>
-
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -93,8 +91,9 @@ addMapMarkers(window.locations);
 </script>
 
 <div id="navigate">
-  <button style="width: 80px; margin-top: 10px;text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
-  <button style="width: 80px; margin-top: 10px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
 </div>
 
 </body>

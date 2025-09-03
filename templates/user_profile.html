@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>munrosWithFriends</title>
+  <link rel="icon" href="/static/images/munro.png" type="image/png">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <script>
+    const user = {{ user | tojson }};
+
+    const users = {{ other_users | tojson }};
+    const user_list = users.map(item => item.user_name);
+
+    const user_links = user_list.reduce((acc, curr) => {
+                            acc[curr] = `../${curr}/view`;
+                            return acc;
+                            }, {});
+
+    console.log(user_links)
+
+    const data = {{ log_data|tojson|safe }}
+    const bag_dates = data.map(item => item.date);
+    const filtered_dates = bag_dates.filter(item => item !== null && item !== undefined);
+    filtered_dates.sort()
+
+    const bag_years = filtered_dates.map(str => str.slice(0, 4));
+    
+    const counts = {};
+    bag_years.forEach(item => {
+        counts[item] = (counts[item] || 0) + 1;
+        });
+
+        // Step 2: Find the most common element
+        let count = 0;
+        let year = null;
+
+        for (const [key, value] of Object.entries(counts)) {
+        if (value > count) {
+            count = value;
+            year = key;
+        }
+        }
+
+</script>
+
+</head>
+
+<body style="margin-left: 20px; margin-top: 20px;">
+
+<button style="width: 100px; text-align: center;"onclick="window.location.href=`/${user}/edit`">Edit page</button>
+<button style="width: 100px; text-align: center;"onclick="window.location.href=`/${user}/view`">View page</button>
+<button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+
+
+<div id="col-container" style="display: flex; gap: 20px; margin-top: 40px;">
+
+
+<div id="profile-summary" style="margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px"></div>
+    
+    <script>
+        document.getElementById('profile-summary').innerHTML = 
+        `
+        <h1 style="display:inline; margin-right:10px;">Profile:</h1>
+        <p style="display:inline; font-size:25px;"><strong>${user}</strong></p>
+        
+        <br><br>
+        <div style="border: 2px solid black; width:70px; padding:5px 5px" id="imageContainer"></div>
+        <br>
+
+        <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:8px; column-gap:15px; font-size:18px;">
+
+            <strong>Total bags:</strong><span>{{ bag_total }}/282</span>
+            <strong>First bag:</strong><span>${filtered_dates[0]}</span>
+            <strong>Last bag:</strong><span>${filtered_dates[filtered_dates.length - 1]}</span>
+            <strong>Best year:</strong><span>${count} bags, ${year}</span>
+        
+        </div>
+
+        <h2>Upload an Image</h2>
+        <p style="font-size: 14px;">This will replace your current map bag icon.<br>
+            .png files only for now.</p>
+       
+            <input type="file" id="fileInput" accept="image/*"><br>
+            <button id="uploadBtn">Upload</button>
+
+            <p id="status"></p>
+    `
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const status = document.getElementById('status');
+
+            if (!file) {
+                status.textContent = "Please select a file.";
+                return;
+            }
+
+            const validTypes = ['image/png',
+                                //'image/jpeg',
+                                //'image/jpg',
+                                //'image/gif'
+                                 ];
+            
+                                 if (!validTypes.includes(file.type)) {
+                status.textContent = "Invalid file type.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('user', user);
+
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            status.textContent = result.message || result.error;
+            
+            if (response.ok) {
+                window.location.reload()
+            };
+        });
+             
+    </script>
+
+    <script>
+        const imgContainer = document.getElementById('imageContainer')
+        const imgPath = `/static/images/${user}.png`;
+        
+        const img = new Image();
+        img.src = imgPath;
+
+        img.width = 70;
+        img.height = 70;
+
+        img.onload = () => {
+            imgContainer.appendChild(img);
+        };
+        img.onerror = () => {
+
+            const img = new Image();
+            img.src = `/static/images/bag.png`;
+
+            img.width = 70;
+            img.height = 70;
+
+            imgContainer.appendChild(img);
+        };
+    </script>
+
+
+<div id="search-users" style="margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px">
+<h1 style="margin-right:10px;">Find friends</h1>
+    <input type="text" id="search" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 200px;">
+        <div id="buttons-container"></div>
+
+</div>
+
+<script>
+const container = document.getElementById('buttons-container');
+    const searchInput = document.getElementById('search');
+
+    // Convert object to array of {label, link}
+    const usersArray = Object.entries(user_links).map(([label, link]) => ({ label, link }));
+
+    function renderButtons(filter = "") {
+        container.innerHTML = "";
+        usersArray
+            .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
+            .forEach(item => {
+                const btn = document.createElement('button');
+                btn.textContent = item.label;
+                btn.style.display = "block";
+                btn.style.width = "100%";
+                btn.style.marginBottom = "5px";
+                btn.onclick = () => window.location.href = item.link;
+                container.appendChild(btn);
+            });
+    }
+
+    // Initial render
+    renderButtons();
+
+    // Filter on input
+    searchInput.addEventListener('input', (e) => {
+        renderButtons(e.target.value);
+    });
+</script>
+
+  
+</div>
+
+</body>
+</html>
+
+
