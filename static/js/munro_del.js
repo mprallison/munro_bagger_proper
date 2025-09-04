@@ -10,37 +10,7 @@ document.addEventListener('submit', async function(event) {
 
     const buttonId = event.submitter.id;
 
-    if (buttonId === 'sub-munro') {
-
-        const formEl = event.target;
-        
-        const formData = {
-                        munro_id: formEl.querySelector('[id="munro-id"]')?.value,
-                        date: formEl.querySelector('[id="date"]')?.value,
-                        distance: formEl.querySelector('[id="distance"]')?.value || null,
-                        friends: formEl.querySelector('[id="friends"]')?.value || null,
-                        notes: formEl.querySelector('[id="notes"]')?.value || null,
-                        private: formEl.querySelector('[id="private"]')?.value || null
-                        }
-   
-        try {
-            const response = await fetch('/addBag', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-                });
-            
-            const result = await response.json();
-            if (response.ok) {
-                localStorage.setItem('newBag', true);
-                localStorage.setItem('prev_munro_coords', JSON.stringify(result.coords));
-                window.location.reload();
-                }
-            } catch(err) {
-                console.error("Error submitting form:", err);
-            }
-        
-        } else if (buttonId === 'del-munro') {
+    if (buttonId === 'del-munro') {
 
         const data = {
                     munro_id: formEl.querySelector('[id="munro-id"]')?.value

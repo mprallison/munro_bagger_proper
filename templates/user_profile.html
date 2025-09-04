@@ -9,6 +9,9 @@
 
   <link rel="stylesheet" href="/static/css/styles.css">
 
+  <script type="module" src="/static/js/user_del.js"></script>
+  <script type="module">import { download } from '/static/js/download_data.js';</script>
+
   <script>
     const user = {{ user | tojson }};
 
@@ -19,8 +22,6 @@
                             acc[curr] = `../${curr}/view`;
                             return acc;
                             }, {});
-
-    console.log(user_links)
 
     const data = {{ log_data|tojson|safe }}
     const bag_dates = data.map(item => item.date);
@@ -51,24 +52,16 @@
 
 <body style="margin-left: 20px; margin-top: 20px;">
 
-<button style="width: 100px; text-align: center;"onclick="window.location.href=`/${user}/edit`">Edit page</button>
-<button style="width: 100px; text-align: center;"onclick="window.location.href=`/${user}/view`">View page</button>
-<button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+<div id="col-container" style="display: flex; gap: 3px;">
 
-
-<div id="col-container" style="display: flex; gap: 20px; margin-top: 40px;">
-
-
-<div id="profile-summary" style="margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px"></div>
+<div id="profile-summary" style="background-color: lightblue; margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px"></div>
     
     <script>
         document.getElementById('profile-summary').innerHTML = 
-        `
-        <h1 style="display:inline; margin-right:10px;">Profile:</h1>
-        <p style="display:inline; font-size:25px;"><strong>${user}</strong></p>
+        `<h1 style="display:inline; margin-right:10px;">${user}</h1>
         
         <br><br>
-        <div style="border: 2px solid black; width:70px; padding:5px 5px" id="imageContainer"></div>
+        <div style="background-color: white; border: 2px solid black; width:70px; padding:5px 5px" id="imageContainer"></div>
         <br>
 
         <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:8px; column-gap:15px; font-size:18px;">
@@ -80,15 +73,33 @@
         
         </div>
 
-        <h2>Upload an Image</h2>
-        <p style="font-size: 14px;">This will replace your current map bag icon.<br>
-            .png files only for now.</p>
-       
-            <input type="file" id="fileInput" accept="image/*"><br>
-            <button id="uploadBtn">Upload</button>
+        <p>Upload new icon image (.png only just now)</p>
+   
+        <input type="file" id="fileInput" accept="image/*"><br>
+        <button id="uploadBtn">Upload</button>
 
-            <p id="status"></p>
-    `
+        <p id="status"></p>
+
+        <button id="downloadBtn">Download my data</button>
+
+        <div style="grid-column: 1 / -1;">
+                <hr style="border: none; height: 0.5px; background-color: #333; margin: 20px 20px;">
+        </div>
+
+        <div style="display:flex; margin-top:10px;">
+        <form style="display:flex; flex-direction: column; width: 100%;">
+            <label style="font-size:12px; margin-bottom:8px;">
+            <input type="checkbox" name="conf" required>
+            Confirm - permanently delete your profile and data
+            </label>
+
+            <button id="del-profile" type="submit"
+            style="margin-left:auto; white-space:nowrap; width:120px; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
+            Delete profile 😧
+            </button>
+        </form>
+        </div>
+        `
     document.getElementById('uploadBtn').addEventListener('click', async () => {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
@@ -112,7 +123,6 @@
 
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('user', user);
 
             for (let [key, value] of formData.entries()) {
                 console.log(key, value);
@@ -131,9 +141,6 @@
             };
         });
              
-    </script>
-
-    <script>
         const imgContainer = document.getElementById('imageContainer')
         const imgPath = `/static/images/${user}.png`;
         
@@ -156,15 +163,35 @@
 
             imgContainer.appendChild(img);
         };
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+
+            fetch('/download', {
+                method: 'POST',
+            })
+            .then(response => response.blob()) // Convert response to Blob
+            .then(blob => {
+                // Create a URL for the blob
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.csv'; // Filename for download
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url); // Clean up
+            })
+            .catch(error => console.error('Error:', error));
+                });
     </script>
 
-
-<div id="search-users" style="margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px">
+<div id="search-users" style="background-color: lightblue; margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 180px;padding:1px 20px">
 <h1 style="margin-right:10px;">Find friends</h1>
-    <input type="text" id="search" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 200px;">
+    <input type="text" id="search" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 130px;">
         <div id="buttons-container"></div>
-
 </div>
+
+
 
 <script>
 const container = document.getElementById('buttons-container');
@@ -173,20 +200,37 @@ const container = document.getElementById('buttons-container');
     // Convert object to array of {label, link}
     const usersArray = Object.entries(user_links).map(([label, link]) => ({ label, link }));
 
-    function renderButtons(filter = "") {
-        container.innerHTML = "";
-        usersArray
-            .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
-            .forEach(item => {
-                const btn = document.createElement('button');
-                btn.textContent = item.label;
-                btn.style.display = "block";
-                btn.style.width = "100%";
-                btn.style.marginBottom = "5px";
-                btn.onclick = () => window.location.href = item.link;
-                container.appendChild(btn);
-            });
-    }
+function renderButtons(filter = "") {
+    container.innerHTML = "";
+    usersArray
+        .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(item => {
+            const btn = document.createElement('button');
+            btn.style.display = "flex";          // Flex layout
+            btn.style.alignItems = "center";     // Vertical centering
+            btn.style.justifyContent = "center"; // Horizontal centering
+            btn.style.width = "100%";
+            btn.style.marginBottom = "5px";
+            btn.style.gap = "10px";              // Space between image and text
+            btn.style.padding = "10px";          // Optional padding for better look
+
+            // Create the image element
+            const img = document.createElement('img');
+            img.src = `/static/images/${item.label}.png`;
+            img.alt = item.label;
+            img.style.width = "24px";   // Adjust as needed
+            img.style.height = "24px";
+
+            // Add image and text
+            btn.appendChild(img);
+            btn.appendChild(document.createTextNode(item.label));
+
+            // Click action
+            btn.onclick = () => window.location.href = item.link;
+
+            container.appendChild(btn);
+        });
+}
 
     // Initial render
     renderButtons();
@@ -197,9 +241,15 @@ const container = document.getElementById('buttons-container');
     });
 </script>
 
-  
+<div style="display: flex;
+    flex-direction: column; margin-left: 40px; margin-top: 40px; gap: 10px; border: 1px solid black;border-radius: 5px; padding: 10px 10px;height: 75px; background-color: lightblue">
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
 </div>
 
+
+</div>
 </body>
 </html>
 

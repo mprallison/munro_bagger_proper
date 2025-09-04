@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, Response
 #from markupsafe import escape
 import sqlite3
 from routes.data_queries import *
@@ -7,6 +7,7 @@ from werkzeug.routing import BuildError
 from werkzeug.exceptions import MethodNotAllowed
 from dotenv import load_dotenv
 import os
+import io
 
 load_dotenv()
 
@@ -204,20 +205,49 @@ def del_bag():
 def upload_image():
     # Get file and user from FormData
     file = request.files.get('file')
-    user = request.form.get('user')
+    user_name = session["user_name"]
 
-    print(user)
-
-    if not file or not user:
+    if not file or not user_name:
         return jsonify({"error": "File or user missing"}), 400
 
     upload_folder = "static/images/"
-    filename = f"{user}.png"
+    filename = f"{user_name}.png"
     print(filename)
     path = os.path.join(upload_folder, filename)
     file.save(path)
 
     return jsonify({"message": "File uploaded", "url": f"/{upload_folder}/{filename}"}), 200
+
+@app.route('/download', methods=['POST'])
+def download():
+
+    user_name = session["user_name"]
+
+    user_data = get_user_data_log(user_name)
+
+    # Create CSV in-memory
+    buffer = io.StringIO()
+    user_data.to_csv(buffer, index=False)
+
+    # Get string content
+    csv_data = buffer.getvalue()
+
+    # Return as downloadable CSV
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=data.csv"}
+        )
+
+@app.route('/delUser', methods=['POST'])
+def deleteUser():
+
+    user_id = session["user_id"]
+
+    delete_user_data(user_id)
+
+    return jsonify(message="OK"), 200
+    
 
 @app.errorhandler(MethodNotAllowed)
 def handle_405(e):
@@ -227,7 +257,9 @@ def handle_405(e):
 @app.errorhandler(404)
 def page_not_found(error):
 
+
     return "<div style='font-family: Courier New'; letter-spacing: 0.02em;'>" \
     "<h1 style='text-align: center;'>404</h1><p style='text-align: center;'>" \
-    "The page you are looking for does not exist. Do you exist? Are you sure?</p>" \
-    "<br><br><br><br><br>&nbsp;&nbsp;&nbsp;........... splash! Silence again.", 404
+    "The page you are looking for does not exist. Do you exist?</p>" \
+    "<br><br><br><br><br>&nbsp;&nbsp;&nbsp;........... " \
+    "splash! Silence again.", 404

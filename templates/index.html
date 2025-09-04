@@ -71,7 +71,7 @@
   }
 </style>
 
-  <h2 id="form-title">{{ "Sign Up" if show_signup else "Login" }}</h2>
+  <h2 id="form-title">{{ "Sign up" if show_signup else "Login" }}</h2>
 
   <!-- Login Form -->
   <form id="login-form" action="/login" method="POST" 
@@ -87,12 +87,12 @@
         style="display: {{ 'block' if show_signup else 'none' }};">
     <input type="text" name="user_name" placeholder="Username" required style="width:120px">
     <input type="password" name="password" placeholder="Password" required style="width:120px">
-    <button type="submit">Sign Up</button>
+    <button type="submit">Sign up</button>
     <div id="sign-up-error" style="color:{{ color }};">{{ message|default('') }}</div>
   </form>
 
   <div class="links">
-    <a href="#" id="toggle-form">{{ "Login" if show_signup else "Sign Up" }}</a>
+    <a href="#" id="toggle-form">{{ "To login" if show_signup else "To sign up" }}</a>
   </div>
 </div>
 

@@ -14,7 +14,8 @@
   <script type="module" src="/static/js/search_map_sidebar.js"></script>
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
-  <script type="module" src="/static/js/bag_del_munro.js"></script>
+  <script type="module" src="/static/js/munro_bag.js"></script>
+  <script type="module" src="/static/js/munro_del.js"></script>
 
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -149,8 +150,8 @@ loadBagIcon().then(bagIcon => {
                   ${loc.date === null
                     ? `<form>
                         <input type="hidden" id="munro-id" value="${loc.munro_id}">
-                        <input type="date" id="date" class="form-element" style="width:120px;height:25px;" required>
-                        <textarea id="distance" placeholder="Distance" class="form-element" style="width:120px;height:25px;margin-top:10px;"></textarea>
+                        <input type="date" id="date" class="form-element" style="width:150px;height:25px;" required>
+                        <textarea id="distance" placeholder="Distance" class="form-element" style="width:150px;height:25px;margin-top:10px;"></textarea>
                         <textarea id="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
                         <textarea id="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
                         <textarea id="private" placeholder="Any info I don't want public" class="form-element" margin-top:10px;"></textarea>

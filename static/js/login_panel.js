@@ -12,12 +12,12 @@ toggleLink.addEventListener('click', function(e) {
     loginForm.style.display = 'none';
     signupForm.style.display = 'block';
     formTitle.textContent = 'Sign Up';
-    toggleLink.textContent = 'Login';
+    toggleLink.textContent = 'To login';
   } else {
     // Show login, hide signup
     signupForm.style.display = 'none';
     loginForm.style.display = 'block';
     formTitle.textContent = 'Login';
-    toggleLink.textContent = 'Sign Up';
+    toggleLink.textContent = 'To sign Up';
   }
 });
