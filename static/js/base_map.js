@@ -1,5 +1,6 @@
 const apiKey = window.API_KEY 
 
+//centre to scotland
  var map = L.map('map', {
     center: [57.08, -4.02],
     zoom: 7,
@@ -8,15 +9,15 @@ const apiKey = window.API_KEY
     zoomControl: false 
   });
 
-// Base layer
+//openstreetmap layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// on zoom layer
+//osmaps layer
 L.tileLayer(`https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=${apiKey}`, {
   attribution: '&copy; Ordnance Survey',
-  maxZoom: 18,
+  maxZoom: 19,
   minZoom: 7,
   tileSize: 512,
   zoomOffset: -1,

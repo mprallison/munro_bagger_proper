@@ -1,3 +1,5 @@
+// shamelessly vibed
+
 export function startFireworksOnMap(map) {
     // Append canvas to Leaflet overlayPane
     const canvas = document.createElement('canvas');
@@ -16,8 +18,6 @@ export function startFireworksOnMap(map) {
 
     resizeCanvas();
     map.on('resize', resizeCanvas);
-
-    const emojiOptions = ['⛰️', '👜'];
 
     class Particle {
         constructor(x, y, color) {

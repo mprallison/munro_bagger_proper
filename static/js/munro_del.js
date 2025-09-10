@@ -1,41 +1,36 @@
-// Listen to all submit events on the document
-document.addEventListener('submit', async function(event) {
-    event.preventDefault();
+// need global listener as form is generated dynamically
 
-    // event.target is the form that was submitted
-    const formEl = event.target;
+document.addEventListener('submit', async (event) => {
+    if (event.target && event.target.id === 'del-form') {
+        event.preventDefault();
 
-    // Make sure the target is a form (safety check)
-    if (formEl.tagName.toLowerCase() !== 'form') return;
+        const formEl = event.target;
 
-    const buttonId = event.submitter.id;
+        const formData = {
+                        munro_id: formEl.querySelector('#munro-id')?.value,
+                        }
 
-    if (buttonId === 'del-munro') {
-
-        const data = {
-                    munro_id: formEl.querySelector('[id="munro-id"]')?.value
-                    }
         try {
             const response = await fetch('/delBag', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-                });
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) throw new Error('Server error');
 
             const result = await response.json();
-            if (response.ok) {
-                localStorage.setItem('prev_munro_coords', JSON.stringify(result.coords));
-                window.location.reload();
-                }
-            } catch (err) {
-                console.error('Error submitting form:', err);
-                    }
-        
-        } else {
-        console.log("error")
-        };
-    });
 
+            // Save to localStorage before reload
+            localStorage.setItem('prev_munro_coords', JSON.stringify(result.coords));
+
+            window.location.reload(); 
+
+        } catch (err) {
+            console.error("Error submitting form:", err);
+        }
+    }
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     const coords = JSON.parse(localStorage.getItem('prev_munro_coords'));
@@ -47,8 +42,4 @@ window.addEventListener('DOMContentLoaded', () => {
             goToLocation(coords[0], coords[1]);
         }
     };
-    if (localStorage.getItem('newBag')) {
-      startFireworksOnMap(window.map);
-      localStorage.removeItem('newBag');
-    }
 });

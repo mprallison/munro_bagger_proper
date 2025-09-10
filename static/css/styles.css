@@ -57,7 +57,7 @@ canvas {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     text-align: top;
     width: 140px;
-    height: 200px;
+    height: 220px;
   }
 
 #searchInput::placeholder {
@@ -95,7 +95,6 @@ button:hover {
   filter: brightness(90%);
   cursor: pointer;
 }
-
 
 .leaflet-popup-content-wrapper {
   background: rgba(255, 255, 255, 0.9) !important;
@@ -143,8 +142,8 @@ h3 {
 
 form {
   display: flex;
-  flex-direction: column; /* stack elements vertically */
-  gap: 5px; /* optional spacing between elements */
+  flex-direction: column;
+  gap: 5px;
 }
 
 .form-element {

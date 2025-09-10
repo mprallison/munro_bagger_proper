@@ -14,7 +14,7 @@
   <script type="module" src="/static/js/search_map_sidebar.js"></script>
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
-  <script src="/static/js/login_panel.js" defer></script>
+  <script type="module" src="/static/js/login_panel_toggle.js"></script>
 
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -31,7 +31,7 @@
 <div id="table_layer">
   <table id="mountainTable">
     <colgroup><col style="width: 120px"></colgroup>
-    <thead id="tableHeader" style="position: fixed; top: 0; background: white; traz-index: 1000;">
+    <thead id="tableHeader" style="position: fixed; top: 0; background: white;">
       <th style="text-align: left;">
         Name (282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
@@ -71,6 +71,8 @@
   }
 </style>
 
+<div>
+
   <h2 id="form-title">{{ "Sign up" if show_signup else "Login" }}</h2>
 
   <!-- Login Form -->
@@ -79,7 +81,6 @@
     <input type="text" name="user_name" placeholder="Username" required style="width:120px">
     <input type="password" name="password" placeholder="Password" required style="width:120px">
     <button type="submit">Login</button>
-    <div id="login-error" style="color: #D10000;">{{ error|default('') }}</div>
   </form>
 
   <!-- Signup Form -->
@@ -88,13 +89,17 @@
     <input type="text" name="user_name" placeholder="Username" required style="width:120px">
     <input type="password" name="password" placeholder="Password" required style="width:120px">
     <button type="submit">Sign up</button>
-    <div id="sign-up-error" style="color:{{ color }};">{{ message|default('') }}</div>
   </form>
 
   <div class="links">
     <a href="#" id="toggle-form">{{ "To login" if show_signup else "To sign up" }}</a>
   </div>
+  <br>
+  <div id="login-error" style="color: #D10000;">{{ error|default('') }}</div>
+  <div id="sign-up-error" style="color:{{ color }};">{{ message|default('') }}</div>
 </div>
+
+
 
 <!--add base map-->
 <script src="/static/js/base_map.js"></script>
@@ -120,9 +125,11 @@ L.marker([{{ loc.latitude }}, {{ loc.longitude }}], {icon: gapIcon})
   //add popup
   const popupContent = `
         <div>
-      <h3>{{ loc.name }}</h3>
-
-      <p style = "font-size: 12px;"> {{ loc.description }} <a href="{{ loc.whl_url }}" target="_blank">More</a></p>
+      <h3 style="margin: 0;">{{ loc.name }}</h3>
+      <p style="margin: 0; font-size: 12px; text-align: center;">
+        <a href="{{ loc.whl_url }}" target="_blank">walkhighlands</a>
+      </p>
+      <br>
 
       <div style="
         display: grid;
@@ -138,8 +145,6 @@ L.marker([{{ loc.latitude }}, {{ loc.longitude }}], {icon: gapIcon})
         <strong>Region:</strong>
         <span>{{ loc.region }}</span>
       </div>
-  
-      <p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>
       `;
 
     L.popup()

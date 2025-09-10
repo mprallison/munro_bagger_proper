@@ -9,20 +9,66 @@
 
   <link rel="stylesheet" href="/static/css/styles.css">
 
-  <script type="module" src="/static/js/user_del.js"></script>
-  <script type="module">import { download } from '/static/js/download_data.js';</script>
+  <style>
+  button {
+      display: inline-block;       /* or flex */
+      max-width: 150px;            /* set your limit */
+      white-space: nowrap;         /* prevent wrapping */
+      overflow: hidden;            /* hide overflowing text */
+      text-overflow: ellipsis;     /* show "..." at the end */
+    }
+
+  .search-container {
+    width: 100%;             /* take full width of parent div */
+    display: flex;
+    justify-content: center; /* horizontal centering */
+    position: relative;      /* for dropdown positioning */
+    padding: 0 0;
+  }
+
+  #search-teams {
+    width: 200px;            /* fixed width input */
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  #team-container {
+    position: absolute;      /* dropdown below input */
+    top: 100%;
+    left: 50%;               /* center dropdown relative to input */
+    transform: translateX(-50%);
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+    display: none; /* hidden by default */
+    z-index: 1000;
+    width: 150px;            /* same width as input */
+  }
+
+  .team-item {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .team-item:hover, .team-item.selected {
+    background-color: #e0f0ff;
+  }
+
+</style>
 
   <script>
+    //get current user
     const user = {{ user | tojson }};
+    const user_imgs = {{ user_imgs | tojson }};
+    const teams = {{ teams | tojson }};
 
-    const users = {{ other_users | tojson }};
-    const user_list = users.map(item => item.user_name);
+    console.log(teams)
 
-    const user_links = user_list.reduce((acc, curr) => {
-                            acc[curr] = `../${curr}/view`;
-                            return acc;
-                            }, {});
+    window.user_img = user_imgs[user]
 
+    //get user first, last bag year and best year
     const data = {{ log_data|tojson|safe }}
     const bag_dates = data.map(item => item.date);
     const filtered_dates = bag_dates.filter(item => item !== null && item !== undefined);
@@ -35,7 +81,6 @@
         counts[item] = (counts[item] || 0) + 1;
         });
 
-        // Step 2: Find the most common element
         let count = 0;
         let year = null;
 
@@ -46,207 +91,384 @@
         }
         }
 
-</script>
+    //get array if all distinct users and user/view href
+    const users = {{ other_users | tojson }};
+    const user_list = users.map(item => item.user_name);
 
+    const user_links = user_list.reduce((acc, curr) => {
+                            acc[curr] = `../${curr}/view`;
+                            return acc;
+                            }, {});
+
+    console.log(users)
+
+</script>
 </head>
 
-<body style="margin-left: 20px; margin-top: 20px;">
+<body style="margin-left: 10px;overflow: auto;">
 
-<div id="col-container" style="display: flex; gap: 3px;">
+<div id="col-container" style="display: flex; gap: 2px; max-height:95%">
 
-<div id="profile-summary" style="background-color: lightblue; margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 300px;padding:20px 30px"></div>
+<div id="profile-summary" style="background-color: lightblue; margin-left: 20px; margin-top: 20px;color:#000;border: 1px solid black; width: 265px; padding:20px 30px"></div>
     
     <script>
         document.getElementById('profile-summary').innerHTML = 
-        `<h1 style="display:inline; margin-right:10px;">${user}</h1>
-        
-        <br><br>
-        <div style="background-color: white; border: 2px solid black; width:70px; padding:5px 5px" id="imageContainer"></div>
+        `
+            <div style="display: flex; flex-direction: row; gap: 5px;">
+                <button style="width: 80px; text-align: center;" 
+                        onclick="window.location.href='/{{ user }}/edit'">
+                Edit page
+                </button>
+                <button style="width: 80px; text-align: center;" 
+                        onclick="window.location.href='/{{ user }}/view'">
+                View page
+                </button>
+                <button style="width: 80px; text-align: center;" 
+                        onclick="window.location.href='{{ url_for('auth.logout') }}'">
+                Logout
+                </button>
+            </div>
+        <h2>${user}</h2>
+
+        <div style="background-color: white; border: 2px solid black; width:70px; padding:5px">
+          <img src="{{ user_img }}" alt="Profile Image" width="70" height="70">
+        </div>
+
         <br>
 
         <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:8px; column-gap:15px; font-size:18px;">
-
             <strong>Total bags:</strong><span>{{ bag_total }}/282</span>
             <strong>First bag:</strong><span>${filtered_dates[0]}</span>
             <strong>Last bag:</strong><span>${filtered_dates[filtered_dates.length - 1]}</span>
             <strong>Best year:</strong><span>${count} bags, ${year}</span>
-        
         </div>
 
-        <p>Upload new icon image (.png only just now)</p>
-   
-        <input type="file" id="fileInput" accept="image/*"><br>
-        <button id="uploadBtn">Upload</button>
+        <br>
+        <form action="/uploadImage" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <button >Upload user image</button>
+        </form>
 
         <p id="status"></p>
 
-        <button id="downloadBtn">Download my data</button>
+        <form action="/downloadData" method="get">
+        <button >Download my data</button>
+        </form>
 
-        <div style="grid-column: 1 / -1;">
-                <hr style="border: none; height: 0.5px; background-color: #333; margin: 20px 20px;">
-        </div>
+        <hr style="height: 0.5px; background-color: black; margin: 10px 0 0 0;">
 
-        <div style="display:flex; margin-top:10px;">
-        <form style="display:flex; flex-direction: column; width: 100%;">
-            <label style="font-size:12px; margin-bottom:8px;">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
+        <form action="/delUser" method="POST" 
+          style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <label style="font-size: 12px; margin-bottom: 8px;">
             <input type="checkbox" name="conf" required>
-            Confirm - permanently delete your profile and data
+            Confirm - permanently delete my profile and data
             </label>
 
-            <button id="del-profile" type="submit"
-            style="margin-left:auto; white-space:nowrap; width:120px; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
-            Delete profile 😧
+            <button type="submit"
+                    style="width: 80px; background-color: red; color: black; font-weight: bold; border-radius: 5px; cursor: pointer;">
+            Delete 😧
             </button>
         </form>
         </div>
         `
-    document.getElementById('uploadBtn').addEventListener('click', async () => {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const status = document.getElementById('status');
-
-            if (!file) {
-                status.textContent = "Please select a file.";
-                return;
-            }
-
-            const validTypes = ['image/png',
-                                //'image/jpeg',
-                                //'image/jpg',
-                                //'image/gif'
-                                 ];
-            
-                                 if (!validTypes.includes(file.type)) {
-                status.textContent = "Invalid file type.";
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-            status.textContent = result.message || result.error;
-            
-            if (response.ok) {
-                window.location.reload()
-            };
-        });
-             
-        const imgContainer = document.getElementById('imageContainer')
-        const imgPath = `/static/images/${user}.png`;
-        
-        const img = new Image();
-        img.src = imgPath;
-
-        img.width = 70;
-        img.height = 70;
-
-        img.onload = () => {
-            imgContainer.appendChild(img);
-        };
-        img.onerror = () => {
-
-            const img = new Image();
-            img.src = `/static/images/bag.png`;
-
-            img.width = 70;
-            img.height = 70;
-
-            imgContainer.appendChild(img);
-        };
-
-        document.getElementById('downloadBtn').addEventListener('click', () => {
-
-            fetch('/download', {
-                method: 'POST',
-            })
-            .then(response => response.blob()) // Convert response to Blob
-            .then(blob => {
-                // Create a URL for the blob
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.csv'; // Filename for download
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url); // Clean up
-            })
-            .catch(error => console.error('Error:', error));
-                });
     </script>
 
-<div id="search-users" style="background-color: lightblue; margin-left: 40px; margin-top: 40px;color:#000;border: 1px solid black; width: 180px;padding:1px 20px">
-<h1 style="margin-right:10px;">Find friends</h1>
-    <input type="text" id="search" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 130px;">
-        <div id="buttons-container"></div>
+<div id="teams" style="background-color: lightblue; margin-left: 40px; margin-top: 20px;color:#000;border: 1px solid black; width: 200px; padding:1px 20px">
+
+
+<h3 style="margin-top:10px;">Teams</h3>
+    <input type="text" id="search-teams" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 130px;">
+    <div id="teams-container"></div>
+
+    <div style="height: 350px; border: 1px solid black;">
+
+  <table id="team-table" cellspacing="0" cellpadding="6";>
+  <tbody>
+    {% for team in teams %}
+      <tr>
+        <td>
+          <button onclick="window.location.href='../{{ team.team_name | urlencode }}/team_view'">
+            {{ team.team_name }}
+          </button>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 </div>
+
+
+  <br><br>
+   <div>
+    <form id="team-form" action="/add_team" method="POST">
+    <input type="text" name="team_name" placeholder="Team name" required style="width:120px">
+
+    <button type="submit">Create new team</button>
+
+  </form>
+</div>
+    //<div style="color: #D10000;">{{ error|default('') }}</div>
+
+<script>
+  document.getElementById("search-teams").addEventListener("keyup", function () {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#team-table tbody tr");
+
+    rows.forEach(row => {
+      let text = row.innerText.toLowerCase();
+      if (text.includes(filter)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  });
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="search-users" style="background-color: lightblue; margin-left: 40px; margin-top: 20px; color:#000; border: 1px solid black; width: 240px; padding:10px;flex-direction: column;">
+  <h3>Find friends</h3>
+
+  <!-- Scrollable container -->
+  <div style="max-height: 350px; overflow-y: auto; border: 1px solid black; border-radius: 5px; width: 240px">
+    <table style="width: 95%; border-collapse: separate; border-spacing: 0;">
+      <thead>
+        <tr>
+          <th colspan="2" style="padding: 10px;">
+            <input type="text" id="search-friends" placeholder="Search..." style="width: 90%; padding: 5px; margin-bottom: 10px;">
+          </th>
+        </tr>
+      </thead>
+      <tbody id="buttons-container">
+        {{ users }}
+      </tbody>
+    </table>
+  </div>
+  
+  <br>
+  <h3>Select a team</h3>
+  <div class="search-container">
+  <input type="text" id="search-teams" placeholder="Search...">
+  <div id="team-container">
+    <div class="team-item">Alice</div>
+    <div class="team-item">Bob</div>
+    <div class="team-item">Charlie</div>
+    <div class="team-item">David</div>
+    <div class="team-item">Eve</div>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 10px;">
+  <button id="add-member-btn" type="submit" style="display: none;">Add to team</button>
+</div>
+
+</div>
+
+
 
 
 
 <script>
 const container = document.getElementById('buttons-container');
-    const searchInput = document.getElementById('search');
+const searchFriendInput = document.getElementById('search-friends');
 
-    // Convert object to array of {label, link}
-    const usersArray = Object.entries(user_links).map(([label, link]) => ({ label, link }));
+// Convert object to array of {label, link}
+const usersArray = Object.entries(user_links).map(([label, link]) => ({ label, link }));
+
+// Store checkbox states
+const checkedUsers = {}; // { label: true/false }
 
 function renderButtons(filter = "") {
-    container.innerHTML = "";
-    usersArray
-        .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(item => {
-            const btn = document.createElement('button');
-            btn.style.display = "flex";          // Flex layout
-            btn.style.alignItems = "center";     // Vertical centering
-            btn.style.justifyContent = "center"; // Horizontal centering
-            btn.style.width = "100%";
-            btn.style.marginBottom = "5px";
-            btn.style.gap = "10px";              // Space between image and text
-            btn.style.padding = "10px";          // Optional padding for better look
+  container.innerHTML = "";
 
-            // Create the image element
-            const img = document.createElement('img');
-            img.src = `/static/images/${item.label}.png`;
-            img.alt = item.label;
-            img.style.width = "24px";   // Adjust as needed
-            img.style.height = "24px";
+  usersArray
+    .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(item => {
+      // Table row
+      const tr = document.createElement('tr');
+      tr.style.display = "flex"; // Use flex for scrollable tbody
+      tr.style.alignItems = "center";
+      tr.style.marginBottom = "5px";
 
-            // Add image and text
-            btn.appendChild(img);
-            btn.appendChild(document.createTextNode(item.label));
+      // Checkbox cell
+      const tdCheckbox = document.createElement('td');
+      tdCheckbox.style.width = "30px";
+      const checkbox = document.createElement('input');
+      checkbox.type = "checkbox";
+      checkbox.value = item.label;
+      checkbox.checked = !!checkedUsers[item.label];
+      checkbox.onclick = (e) => {
+        e.stopPropagation();
+        checkedUsers[item.label] = checkbox.checked;
+      };
+      tdCheckbox.appendChild(checkbox);
 
-            // Click action
-            btn.onclick = () => window.location.href = item.link;
+      // Button cell
+      const tdButton = document.createElement('td');
+      tdButton.style.flexGrow = "1";
+      const btn = document.createElement('button');
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.gap = "10px";
+      btn.style.width = "190px";
+      btn.style.height = "30px";
+      btn.style.border = "1px solid black";
+      btn.style.backgroundColor = "#e0f0ff";
+      btn.style.cursor = "pointer";
 
-            container.appendChild(btn);
-        });
+      // Image
+      const img = document.createElement('img');
+      img.src = user_imgs[item.label]
+      //img.src = `/static/images/${item.label}.png`;
+      img.alt = item.label;
+      img.style.width = "24px";
+      img.style.height = "24px";
+
+      // Text
+      const labelText = document.createTextNode(item.label);
+
+      btn.appendChild(img);
+      btn.appendChild(labelText);
+
+      btn.onclick = () => window.location.href = item.link;
+
+      tdButton.appendChild(btn);
+
+      tr.appendChild(tdCheckbox);
+      tr.appendChild(tdButton);
+
+      container.appendChild(tr);
+    });
 }
 
-    // Initial render
-    renderButtons();
+// Initial render
+renderButtons();
 
-    // Filter on input
-    searchInput.addEventListener('input', (e) => {
-        renderButtons(e.target.value);
-    });
+// Filter on input
+searchFriendInput.addEventListener('input', (e) => {
+  renderButtons(e.target.value);
+});
 </script>
 
-<div style="display: flex;
-    flex-direction: column; margin-left: 40px; margin-top: 40px; gap: 10px; border: 1px solid black;border-radius: 5px; padding: 10px 10px;height: 75px; background-color: lightblue">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+
+
+
+<script>
+const searchInput = document.getElementById('search-teams');
+const listContainer = document.getElementById('team-container');
+const items = Array.from(listContainer.getElementsByClassName('team-item'));
+
+// Filter and show options only when text is entered
+searchInput.addEventListener('input', () => {
+  const filter = searchInput.value.toLowerCase();
+
+  if (filter === "") {
+    listContainer.style.display = 'none';
+    return;
+  }
+
+  let anyVisible = false;
+  items.forEach(item => {
+    if (item.textContent.toLowerCase().includes(filter)) {
+      item.style.display = 'block';
+      anyVisible = true;
+    } else {
+      item.style.display = 'none';
+    }
+  });
+
+  listContainer.style.display = anyVisible ? 'block' : 'none';
+});
+
+// Select a single option
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    // Remove previous selection
+    items.forEach(i => i.classList.remove('selected'));
+    // Highlight clicked item
+    item.classList.add('selected');
+    // Set input value to selected option
+    searchInput.value = item.textContent;
+    // Hide options after selection
+    listContainer.style.display = 'none';
+    console.log('Selected:', item.textContent);
+
+
+  });
+});
+
+// Hide the list if clicked outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-container')) {
+    listContainer.style.display = 'none';
+  }
+});
+
+</script>
+
+
+<div style="text-align: center; margin-top: 10px;">
+  <button id="add-member-btn" type="submit" style="display: none;">Add friends to team</button>
 </div>
+
+<script>
+const addMemberBtn = document.getElementById('add-member-btn');
+
+// Show button when an item is selected
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    // Remove previous selection
+    items.forEach(i => i.classList.remove('selected'));
+
+    // Highlight clicked item
+    item.classList.add('selected');
+
+    // Set input value to selected option
+    searchInput.value = item.textContent;
+
+    // Hide options after selection
+    listContainer.style.display = 'none';
+    console.log('Selected:', item.textContent);
+
+    // Show the confirm button
+    addMemberBtn.style.display = 'inline-block'; // inline-block keeps button centered
+  });
+});
+
+// Optional: handle button click
+//addMemberBtn.addEventListener('click', () => {
+//  alert('You selected: ' + searchInput.value);
+//});
+//</script>
+
+           
+
+
+
+
+
+</div>
+
+
+
 
 
 </div>

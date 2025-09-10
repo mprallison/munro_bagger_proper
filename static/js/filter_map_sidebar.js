@@ -3,16 +3,18 @@ import { addMapMarkers } from '/static/js/populate_markers.js';
 const idFilter = document.getElementById('idFilter');
 const rows = document.querySelectorAll('#mountainTable tbody tr');
 
-// Build the dropdown dynamically from unique IDs in the first cell
+// build dropdown dynamically from unique IDs in the first cell
 const uniqueIds = new Set();
 rows.forEach(row => {
   uniqueIds.add(row.cells[0].id);
 });
 
+// filter for bags
 var idList = Array.from(uniqueIds);
 idList = idList.filter(item => item !== "gap");
 idList.sort().reverse();
 
+// append bags as options 
 idList.forEach(id => {
   const option = document.createElement('option');
   option.value = id;
@@ -20,11 +22,12 @@ idList.forEach(id => {
   idFilter.appendChild(option);
 });
 
+// get count
 const countDisplay = document.getElementById('countDisplay');
 
 let filterMunroIds = window.filterMunroIds;
 
-// Filter rows when dropdown changes
+// filter rows when dropdown changes
 idFilter.addEventListener('change', () => {
   const filter = idFilter.value.trim();
   
@@ -40,7 +43,7 @@ idFilter.addEventListener('change', () => {
       filterMunroIds.push(row.cells[0].getAttribute('data-munro-id'))
     };
   });
-  // Replace the text inside the existing span
+  // replace the text inside the existing span
   //dont display for all total
   if (visibleCount === 282)
     {countDisplay.textContent = "";}
@@ -51,5 +54,4 @@ idFilter.addEventListener('change', () => {
   const locations = window.locations.filter(item => filterMunroIds.includes(item.munro_id));
 
   addMapMarkers(locations);
-
 });

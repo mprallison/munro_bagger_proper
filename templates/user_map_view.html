@@ -82,9 +82,7 @@ console.log(window.layerGroup)
   import { addMapMarkers } from '/static/js/populate_markers.js';
 //convert jinja to js to avoid template with js combo nightmare
 window.locations = {{ log_data|tojson|safe }};
-
-window.userIconUrl = '/static/images/{{ user }}.png';
-window.defaultIconUrl = '/static/images/bag.png';
+window.userIconUrl = "{{ user_img}}";
 window.gapIconUrl = '/static/images/gap.png'
 
 addMapMarkers(window.locations);
@@ -93,7 +91,7 @@ addMapMarkers(window.locations);
 <div id="navigate">
   <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
   <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
 </div>
 
 </body>

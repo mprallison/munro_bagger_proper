@@ -14,8 +14,8 @@
   <script type="module" src="/static/js/search_map_sidebar.js"></script>
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
-  <script type="module" src="/static/js/munro_bag.js"></script>
-  <script type="module" src="/static/js/munro_del.js"></script>
+  <script type="module" src="/static/js/munro_bag.js" defer></script>
+  <script type="module" src="/static/js/munro_del.js" defer></script>
 
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -26,7 +26,6 @@
 </head>
 
 <body>
-
 <canvas id="fireworks"></canvas>
 <script type="module">
   import { startFireworksOnMap } from '/static/js/fireworks.js';
@@ -87,130 +86,99 @@ const gapIcon = L.icon({
     popupAnchor: [0, -10]
 });
 
-//check for user image else use generic bag.png
-const userIconUrl = '/static/images/{{ user }}.png';
-const defaultIconUrl = '/static/images/bag.png';
+//bag icon
+const bagIcon = L.icon({
+    iconUrl: "{{ user_img }}",
+    iconSize: [18, 18],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
 
+locations.forEach(loc => {
+    const peakIcon = loc.date === null ? gapIcon : bagIcon;
 
-function loadBagIcon() {
-    return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => resolve(
-          L.icon({
-            iconUrl: userIconUrl,
-            iconSize: [18, 18],
-            iconAnchor: [10, 10],
-            popupAnchor: [0, -10]
-        }));
-        img.onerror = () => resolve(
-          L.icon({
-            iconUrl: defaultIconUrl,
-            iconSize: [18, 18],
-            iconAnchor: [10, 10],
-            popupAnchor: [0, -10]
-        }));
-        img.src = userIconUrl;
-    });
-}
+    const marker = L.marker([loc.latitude, loc.longitude], { icon: peakIcon })
+        .addTo(map)
+        .bindTooltip(loc.name,
+                  {permanent:false,
+                    direction:'top',
+                    offset:[-1,-7]
+                  })
+        //generate popup content for bag or gap munro
+        .on('click', e => {
+            const popupContent = `
+            <div id=pop-up style="width:300px;">
+              <h3>
+                ${loc.date === null
+                    ? `${loc.name}`
 
-// check image path then build markers
-loadBagIcon().then(bagIcon => {
-    locations.forEach(loc => {
-        const peakIcon = loc.date === null ? gapIcon : bagIcon;
+                    : `🏔️&#8288;${loc.name}&#8288;👜`}
+              
+              </h3>
+        
+              
+              ${loc.date === null
+                ? `<form id="bag-form">
+                    <input type="hidden" id="munro-id" value="${loc.munro_id}">
+                    <input type="date" id="date" class="form-element" style="width:120px;height:25px;" required>
+                    <textarea id="distance" placeholder="Distance" class="form-element" style="width:120px; height:20px; margin-top:5px;"></textarea>
+                    <textarea id="friends" placeholder="Friends" class="form-element" style="margin-top:5px; height:20px;"></textarea>
+                    <textarea id="notes" placeholder="Notes" class="form-element" style="height:40px; margin-top:5px;"></textarea>
+                    <textarea id="private" placeholder="Any info I don't want public" class="form-element" height:20px; margin-top:5px;"></textarea>
+                    
+                    <div style="text-align:center; margin-top:10px;">
+                      <button type="submit"
+                      style="white-space:nowrap; background-color:gold; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
+                        In the bag 🏔️→👜
+                      </button>
+                    </div>
+                  </form>`
+        
+                : `<div>
+                    <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
+                      <strong>Date:</strong><span>${loc.date}</span>
+                      ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
+                      ${loc.friends ? `<strong>Friends:</strong><span>${loc.friends}</span>` : ''}
+                      ${loc.notes ? `<strong>Notes:</strong><span>${loc.notes}</span>` : ''}
+                      ${loc.private ? `<strong>Private:</strong><span>${loc.private}</span>` : ''}
+                    </div>
 
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: peakIcon })
-            .addTo(map)
-            .bindTooltip(loc.name,
-                      {permanent:false,
-                        direction:'top',
-                        offset:[-1,-7]
-                      })
-            //generate popup content for bag or gap munro
-            .on('click', e => {
-                const popupContent = `
-                <div id=pop-up>
-                  <h3>
-                    ${loc.date === null
-                        ? `${loc.name}`
+                    <div style="grid-column: 1 / -1;">
+                      <hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
+                    </div>
 
-                        : `🏔️&#8288;${loc.name}&#8288;👜`}
-                  
-                  </h3>
-                  <p style="font-size:12px;">${loc.description} <a href="${loc.whl_url}" target="_blank">More</a></p>
-
-                  <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                    <strong>Height:</strong><span>${loc.height}</span>
-                    <strong>Region:</strong><span>${loc.region}</span>
-                  </div>
-
-                   <div style="grid-column: 1 / -1;">
-                          <hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
-                      </div>
-                  
-                  ${loc.date === null
-                    ? `<form>
+                    <div style="display:flex; justify-content:center; margin-top:10px;">
+                      <form id="del-form" style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
                         <input type="hidden" id="munro-id" value="${loc.munro_id}">
-                        <input type="date" id="date" class="form-element" style="width:150px;height:25px;" required>
-                        <textarea id="distance" placeholder="Distance" class="form-element" style="width:150px;height:25px;margin-top:10px;"></textarea>
-                        <textarea id="friends" placeholder="Friends" class="form-element" style="margin-top:10px;"></textarea>
-                        <textarea id="notes" placeholder="Notes" class="form-element" style="height:60px;margin-top:10px;"></textarea>
-                        <textarea id="private" placeholder="Any info I don't want public" class="form-element" margin-top:10px;"></textarea>
-                        
-                        <div style="text-align:center; margin-top:10px;">
-                          <button id="sub-munro" type="submit">
-                            In the bag 🏔️→👜
-                          </button>
-                        </div>
-                        <p style="text-align:right; font-size:10px">©2006-2025 Walkhighlands</p>
-                      </form>`
-            
-                    : `<div>
-                        <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                          <strong>Date:</strong><span>${loc.date}</span>
-                          ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
-                          ${loc.friends ? `<strong>Friends:</strong><span>${loc.friends}</span>` : ''}
-                          ${loc.notes ? `<strong>Notes:</strong><span>${loc.notes}</span>` : ''}
-                          ${loc.private ? `<strong>Private:</strong><span>${loc.private}</span>` : ''}
-                        </div>
 
-                        <div style="grid-column: 1 / -1;">
-                          <hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
-                        </div>
+                        <label style="display:flex; align-items:center; gap:0px;font-size: 10px; font-color:black; font-weight:bold;"">
+                          <input type="checkbox" name="conf" required>
+                          Confirm
+                        </label>
 
-                        <div style="display:flex; justify-content:center; margin-top:10px;">
-                          <form style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
-                            <input type="hidden" id="munro-id" value="${loc.munro_id}">
-
-                            <label style="display:flex; align-items:center; gap:0px;font-size: 10px; font-color:black; font-weight:bold;"">
-                              <input type="checkbox" name="conf" required>
-                              Confirm
-                            </label>
-
-                            <button id="del-munro" type="submit"
-                              style="white-space:nowrap; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
-                              Delete 😧
-                            </button>
-                          </form>                   
-                        </div>
-
-                        <p style="text-align:right; font-size:10px;">©2006-2025 Walkhighlands</p>
-                                        
-                      </div>`}
-                </div>
-                `;
-              L.popup()
-                .setLatLng(e.latlng)
-                .setContent(popupContent)
-                .openOn(map)              
-                  });
+                        <button type="submit"
+                          style="white-space:nowrap; background-color:red; color:black; font-weight:bold; border-radius:5px; padding:2px 3px; cursor:pointer;">
+                          Delete 😧
+                        </button>
+                      </form>                   
+                    </div>
+                                    
+                  </div>`}
+            </div>
+            `;
+          L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map)              
+              });
 });
-});
+
 </script>
 
 <div id="navigate">
   <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
   <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
 </div>
 
 </body>

@@ -1,4 +1,4 @@
-
+// toggle login form
 const toggleLink = document.getElementById('toggle-form');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
@@ -18,6 +18,6 @@ toggleLink.addEventListener('click', function(e) {
     signupForm.style.display = 'none';
     loginForm.style.display = 'block';
     formTitle.textContent = 'Login';
-    toggleLink.textContent = 'To sign Up';
+    toggleLink.textContent = 'To sign up';
   }
 });
