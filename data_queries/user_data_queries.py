@@ -65,7 +65,6 @@ def check_user_exists(user_name, DB):
 
     return count
 
-
 def check_team_exists(team_name, DB):
 
     conn = sqlite3.connect(DB)
@@ -150,7 +149,6 @@ def quit_team_query(user_id, team_ids, DB):
     cur = conn.cursor()
 
     try:
-
         # Prepare list of (user_id, team_id) tuples for executemany
         params = [(user_id, team_id) for team_id in team_ids]
 
@@ -193,6 +191,5 @@ def add_user_to_team_query(user_ids, team_id, DB):
     
     except:
         return 404
-    
     finally:
         conn.close()

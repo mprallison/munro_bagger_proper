@@ -101,8 +101,6 @@ def create_team():
     else:
         message, color = "Team name taken!", "#D10000"
 
-    print(response)
-
     return redirect(url_for("pages.user_profile_page", user=session["user_name"], team_message=message, team_color=color))
 
 #quit team
@@ -112,8 +110,6 @@ def quit_team():
 
     team_ids = request.form.getlist("select_team")
     user_id = session["user_id"]
-
-    print(team_ids)
 
     response = quit_team_query(user_id, team_ids, DB)
 
@@ -125,9 +121,6 @@ def add_member():
 
     user_ids = request.form.getlist("select_user")
     [team_id] = request.form.getlist("select_team")
-
-    print(user_ids)
-    print(team_id)
 
     response = add_user_to_team_query(user_ids, team_id, DB)
 

@@ -21,11 +21,9 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
 </head>
 
 <body>
-
 <div id="map"></div>
 
 <div id="table_layer">
@@ -72,10 +70,9 @@
 </style>
 
 <div>
-
-  <h2 id="form-title">{{ "Sign up" if show_signup else "Login" }}</h2>
-
   <!-- Login Form -->
+  <h2 id="form-title">{{ "Sign up" if show_signup else "Login" }}</h2>
+  
   <form id="login-form" action="/login" method="POST" 
         style="display: {{ 'none' if show_signup else 'block' }};">
     <input type="text" name="user_name" placeholder="Username" required style="width:120px">

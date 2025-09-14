@@ -46,7 +46,6 @@ def user_profile_view(user, logged_in=False):
     if check_user_exists(user, DB) == 0:
         return render_template("lost_map.html")
     
-
     #else return user view page
     else:
         log_data, bag_total = get_user_complete_log(user, DB)
@@ -126,4 +125,3 @@ def team_view(team):
         #user_img = get_user_image(user)
         
         return render_template("index.html")
-                                                    

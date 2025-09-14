@@ -170,7 +170,6 @@ form {
     gap: 10px;
   }
 
-/* Add space to the left of each button */
 .profile-button {
     display: flex;
     align-items: center;           
@@ -181,13 +180,9 @@ form {
     border: 1px solid black;
     background-color: #e0f0ff;
     cursor: pointer;
-
-    /* Ellipsis for long text */
     overflow: hidden;         
     white-space: nowrap;      
     text-overflow: ellipsis;  
-
-    /* Space to the left of button */
     margin-left: 15px;
     margin-bottom: 2px; 
 }
@@ -215,10 +210,4 @@ form {
   flex-direction: column;
   height: fit-content;
   overflow-y: auto;
-
 }
-
-
-
-
-

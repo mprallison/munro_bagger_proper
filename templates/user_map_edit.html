@@ -22,14 +22,11 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
 </head>
 
 <body>
 <canvas id="fireworks"></canvas>
-<script type="module">
-  import { startFireworksOnMap } from '/static/js/fireworks.js';
-</script>
+<script type="module">import { startFireworksOnMap } from '/static/js/fireworks.js';</script>
 
 <div id="map"></div>
 
@@ -42,7 +39,6 @@
         Name ({{ bag_total }}/282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
       </th>
-
     <tbody style="display:block; margin-top: 30px;">
     <tbody>
       {% for loc in log_data %}
@@ -65,7 +61,6 @@
       {% endfor %}
     </tbody>
   </table>
-
 </div>
 
 <!-- Toggle Button -->
@@ -175,7 +170,6 @@ locations.forEach(loc => {
             .openOn(map)              
               });
 });
-
 </script>
 
 <div id="navigate">

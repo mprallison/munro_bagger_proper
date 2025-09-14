@@ -42,15 +42,12 @@
         }
         }
 </script>
-
 </head>
-
 <body style="margin-left: 10px;overflow: auto; background-color: #B8FFB8;">
 
 <div id="col-container" style="display: flex;">
 
 <div id="profile-panel">
-
   <!--user profile panel-->
     <script>
 
@@ -90,7 +87,7 @@
         <input type="file" name="file" accept="image/*">
         <button style="width:150px;">Upload user image</button>
         </form>
-
+        <br>
         <form action="/downloadData" method="get">
         <button style="width:150px;">Download my data</button>
         </form>
@@ -155,6 +152,8 @@
 </form>
 {% if team_message %}
   <p style="font-weight: bold; color: {{ team_color }};">{{ team_message }}</p>
+{% else %}
+  <br>
 {% endif %}
 <form id="quit-team" action="/quitTeam" method="POST" style="display: none; flex-direction: column; align-items: center; width: 100%;">
 <label style="font-size: 12px; margin-bottom: 8px;"><input type="checkbox" name="conf" required>Confirm</label>
@@ -163,7 +162,6 @@ style="width: 145px; background-color: red; color: black; font-weight: bold; bor
 Quit teams
 </button>
 </form>
-
 </div>
 
 <div id="friend-panel">
@@ -180,7 +178,6 @@ Quit teams
         </th>
       </tr>
     </thead>
-
     <tbody>
      {% for user in users %}
         <tr>
@@ -194,11 +191,11 @@ Quit teams
           </td>
         </tr>
       {% endfor %}
-
     </tbody>
   </table>
   </div>
   <br>
+
 <form id="add-to-team" action="/addToTeam" method="POST" style="display: none; flex-direction: column; align-items: left; width: 100%;">
 
 <button type="submit"
@@ -208,9 +205,7 @@ Add to team
 </form>
 
 {% if member_message %}
-  <p style="font-weight: bold; color: {{ member_color }};">
-    {{ member_message }}
-  </p>
+<p style="font-weight: bold; color: {{ member_color }};">{{ member_message }}</p>
 {% endif %}
 </div>
 
