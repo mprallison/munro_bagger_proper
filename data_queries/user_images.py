@@ -23,4 +23,3 @@ def get_all_user_images(DB):
         user_imgs[u] = get_user_image(u)
 
     return user_imgs
-

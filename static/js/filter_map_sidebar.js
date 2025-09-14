@@ -48,8 +48,8 @@ idFilter.addEventListener('change', () => {
   if (visibleCount === 282)
     {countDisplay.textContent = "";}
   else {
-  countDisplay.textContent = visibleCount;
-  }
+    countDisplay.textContent = visibleCount;
+    }
 
   const locations = window.locations.filter(item => filterMunroIds.includes(item.munro_id));
 

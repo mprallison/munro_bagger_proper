@@ -75,8 +75,7 @@ export function startFireworksOnMap(map) {
 
         for (let i = fireworks.length - 1; i >= 0; i--) {
             if (fireworks[i].life <= 0) fireworks.splice(i, 1);
-        }
-
+        }   
         requestAnimationFrame(animate);
     }
 

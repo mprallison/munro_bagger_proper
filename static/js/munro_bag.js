@@ -15,7 +15,7 @@ document.addEventListener('submit', async (event) => {
             friends: formEl.querySelector('#friends')?.value || null,
             notes: formEl.querySelector('#notes')?.value || null,
             private: formEl.querySelector('#private')?.value || null
-        };
+            };
 
         try {
             const response = await fetch('/addBag', {

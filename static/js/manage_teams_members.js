@@ -46,7 +46,6 @@ userTable.addEventListener('change', (e) => {
 quitForm.addEventListener('submit', (e) => {
   // Remove previous hidden inputs
   quitForm.querySelectorAll('.hidden-team-input').forEach(el => el.remove());
-
   // Add current checked teams
   checkedTeams.forEach(team => {
     const input = document.createElement('input');
@@ -56,8 +55,6 @@ quitForm.addEventListener('submit', (e) => {
     input.classList.add('hidden-team-input');
     quitForm.appendChild(input);
   });
-
-
 });
 
 // Add selected team + users to add-to-team form before submission

@@ -3,7 +3,6 @@ from data_queries.munro_data_queries import get_munro_data
 from routes.auth import auth_bp
 from routes.pages import pages_bp
 from routes.actions import actions_bp 
-
 from werkzeug.exceptions import MethodNotAllowed
 from dotenv import load_dotenv
 import os
@@ -29,17 +28,19 @@ def index(message=None, color=None):
     message = request.args.get("message")
     color = request.args.get("color")
 
-    return render_template('index.html', locations=locations, os_apikey=os_apikey, message=message, color=color)
+    return render_template('index.html', locations=locations,
+                                        os_apikey=os_apikey,
+                                        message=message,
+                                        color=color
+                                        )
 
 @app.errorhandler(MethodNotAllowed)
 def handle_405(e):
-
     return redirect(url_for("index"))
 
 #page not found
 @app.errorhandler(404)
 def page_not_found(error):
-
     return "<div style='font-family: Courier New'; letter-spacing: 0.02em;'>" \
     "<h1 style='text-align: center;'>404</h1><p style='text-align: center;'>" \
     "The page you are looking for does not exist. Do you exist?</p>" \

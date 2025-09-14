@@ -3,7 +3,6 @@ from flask import Blueprint, request, render_template, session, jsonify, Respons
 from data_queries.munro_data_queries import *
 from data_queries.user_data_queries import *
 from data_queries.user_images import *
-
 from dotenv import load_dotenv
 import os
 import io
@@ -101,7 +100,10 @@ def create_team():
     else:
         message, color = "Team name taken!", "#D10000"
 
-    return redirect(url_for("pages.user_profile_page", user=session["user_name"], team_message=message, team_color=color))
+    return redirect(url_for("pages.user_profile_page", user=session["user_name"],
+                                                    team_message=message,
+                                                    team_color=color
+                                                    ))
 
 #quit team
 #if team has zero members delete team
@@ -129,4 +131,7 @@ def add_member():
     else:
         message, color = "A user is already a member!", "#D10000"
 
-    return redirect(url_for("pages.user_profile_page", user=session["user_name"], member_message=message, member_color=color))
+    return redirect(url_for("pages.user_profile_page", user=session["user_name"],
+                                                    member_message=message,
+                                                    member_color=color
+                                                    ))

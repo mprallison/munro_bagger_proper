@@ -26,7 +26,7 @@ def login():
 
     #if valid create session and go to edit page
     if user and password:
-
+        
         session["user_id"] = user[0]
         session["user_name"] = user[1]
         session["user_img"] = get_user_image(session["user_name"])
@@ -45,8 +45,6 @@ def signup():
     password = request.form["password"]
     
     response = add_user(user_name, password, DB)
-
-    print(response)
 
     if response == 200:
         message, color = "Log in and 🏔️→👜", "#00D100"

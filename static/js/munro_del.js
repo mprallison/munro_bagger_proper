@@ -35,7 +35,6 @@ document.addEventListener('submit', async (event) => {
 window.addEventListener('DOMContentLoaded', () => {
     const coords = JSON.parse(localStorage.getItem('prev_munro_coords'));
     if (coords) {
-
         localStorage.removeItem('prev_munro_coords');
 
         if (window.map && typeof goToLocation === 'function') {

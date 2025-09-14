@@ -64,7 +64,7 @@ def user_profile_view(user, logged_in=False):
     
 #user profile page
 @pages_bp.route("/<user>/profile")
-def user_profile_page(user, team_message=None, team_color=None, member_message=None, member_color=None):
+def user_profile_page(user,team_message=None, team_color=None, member_message=None, member_color=None):
 
     try:
         #redirect to home if no user is logged in
