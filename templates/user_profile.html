@@ -8,65 +8,12 @@
   <link rel="icon" href="/static/images/munro.png" type="image/png">
 
   <link rel="stylesheet" href="/static/css/styles.css">
-
-  <style>
-  button {
-      display: inline-block;       /* or flex */
-      max-width: 150px;            /* set your limit */
-      white-space: nowrap;         /* prevent wrapping */
-      overflow: hidden;            /* hide overflowing text */
-      text-overflow: ellipsis;     /* show "..." at the end */
-    }
-
-  .search-container {
-    width: 100%;             /* take full width of parent div */
-    display: flex;
-    justify-content: center; /* horizontal centering */
-    position: relative;      /* for dropdown positioning */
-    padding: 0 0;
-  }
-
-  #search-teams {
-    width: 200px;            /* fixed width input */
-    padding: 8px;
-    box-sizing: border-box;
-  }
-
-  #team-container {
-    position: absolute;      /* dropdown below input */
-    top: 100%;
-    left: 50%;               /* center dropdown relative to input */
-    transform: translateX(-50%);
-    border: 1px solid #ccc;
-    border-top: none;
-    max-height: 150px;
-    overflow-y: auto;
-    background-color: #fff;
-    display: none; /* hidden by default */
-    z-index: 1000;
-    width: 150px;            /* same width as input */
-  }
-
-  .team-item {
-    padding: 8px;
-    cursor: pointer;
-  }
-
-  .team-item:hover, .team-item.selected {
-    background-color: #e0f0ff;
-  }
-
-</style>
+  <script type="module" src="/static/js/manage_teams_members.js"></script>
 
   <script>
     //get current user
     const user = {{ user | tojson }};
-    const user_imgs = {{ user_imgs | tojson }};
-    const teams = {{ teams | tojson }};
-
-    console.log(teams)
-
-    window.user_img = user_imgs[user]
+    const user_img = {{ user_img | tojson }};
 
     //get user first, last bag year and best year
     const data = {{ log_data|tojson|safe }}
@@ -89,39 +36,34 @@
             count = value;
             year = key;
         }
+
+        if (year === null) {
+          year = "😔"
         }
-
-    //get array if all distinct users and user/view href
-    const users = {{ other_users | tojson }};
-    const user_list = users.map(item => item.user_name);
-
-    const user_links = user_list.reduce((acc, curr) => {
-                            acc[curr] = `../${curr}/view`;
-                            return acc;
-                            }, {});
-
-    console.log(users)
-
+        }
 </script>
+
 </head>
 
-<body style="margin-left: 10px;overflow: auto;">
+<body style="margin-left: 10px;overflow: auto; background-color: #B8FFB8;">
 
-<div id="col-container" style="display: flex; gap: 2px; max-height:95%">
+<div id="col-container" style="display: flex;">
 
-<div id="profile-summary" style="background-color: lightblue; margin-left: 20px; margin-top: 20px;color:#000;border: 1px solid black; width: 265px; padding:20px 30px"></div>
-    
+<div id="profile-panel">
+
+  <!--user profile panel-->
     <script>
-        document.getElementById('profile-summary').innerHTML = 
+
+        document.getElementById('profile-panel').innerHTML = 
         `
             <div style="display: flex; flex-direction: row; gap: 5px;">
                 <button style="width: 80px; text-align: center;" 
-                        onclick="window.location.href='/{{ user }}/edit'">
-                Edit page
-                </button>
-                <button style="width: 80px; text-align: center;" 
                         onclick="window.location.href='/{{ user }}/view'">
                 View page
+                </button>
+                <button style="width: 80px; text-align: center;" 
+                        onclick="window.location.href='/{{ user }}/edit'">
+                Edit page
                 </button>
                 <button style="width: 80px; text-align: center;" 
                         onclick="window.location.href='{{ url_for('auth.logout') }}'">
@@ -138,21 +80,19 @@
 
         <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:8px; column-gap:15px; font-size:18px;">
             <strong>Total bags:</strong><span>{{ bag_total }}/282</span>
-            <strong>First bag:</strong><span>${filtered_dates[0]}</span>
-            <strong>Last bag:</strong><span>${filtered_dates[filtered_dates.length - 1]}</span>
-            <strong>Best year:</strong><span>${count} bags, ${year}</span>
+            <strong>First bag:</strong><span>${filtered_dates[0] ?? '😔'}</span>
+            <strong>Last bag:</strong><span>${filtered_dates[filtered_dates.length - 1] ?? '😔'}</span>
+            <strong>Best year:</strong><span>${count} bags, ${year ?? '😔'}</span>
         </div>
 
         <br>
         <form action="/uploadImage" method="post" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*">
-        <button >Upload user image</button>
+        <button style="width:150px;">Upload user image</button>
         </form>
 
-        <p id="status"></p>
-
         <form action="/downloadData" method="get">
-        <button >Download my data</button>
+        <button style="width:150px;">Download my data</button>
         </form>
 
         <hr style="height: 0.5px; background-color: black; margin: 10px 0 0 0;">
@@ -173,306 +113,131 @@
         </div>
         `
     </script>
-
-<div id="teams" style="background-color: lightblue; margin-left: 40px; margin-top: 20px;color:#000;border: 1px solid black; width: 200px; padding:1px 20px">
-
-
-<h3 style="margin-top:10px;">Teams</h3>
-    <input type="text" id="search-teams" placeholder="Search..." style="margin-bottom: 10px; padding: 5px; width: 130px;">
-    <div id="teams-container"></div>
-
-    <div style="height: 350px; border: 1px solid black;">
-
-  <table id="team-table" cellspacing="0" cellpadding="6";>
-  <tbody>
-    {% for team in teams %}
-      <tr>
-        <td>
-          <button onclick="window.location.href='../{{ team.team_name | urlencode }}/team_view'">
-            {{ team.team_name }}
-          </button>
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
 </div>
 
+<div id="team-panel">
 
-  <br><br>
-   <div>
-    <form id="team-form" action="/add_team" method="POST">
-    <input type="text" name="team_name" placeholder="Team name" required style="width:120px">
+  <h3>Teams</h3>
 
-    <button type="submit">Create new team</button>
-
-  </form>
-</div>
-    //<div style="color: #D10000;">{{ error|default('') }}</div>
-
-<script>
-  document.getElementById("search-teams").addEventListener("keyup", function () {
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#team-table tbody tr");
-
-    rows.forEach(row => {
-      let text = row.innerText.toLowerCase();
-      if (text.includes(filter)) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
-    });
-  });
-</script>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div id="search-users" style="background-color: lightblue; margin-left: 40px; margin-top: 20px; color:#000; border: 1px solid black; width: 240px; padding:10px;flex-direction: column;">
-  <h3>Find friends</h3>
-
-  <!-- Scrollable container -->
-  <div style="max-height: 350px; overflow-y: auto; border: 1px solid black; border-radius: 5px; width: 240px">
-    <table style="width: 95%; border-collapse: separate; border-spacing: 0;">
+  <div style="max-height: 324px; overflow-y: auto; border: 1px solid black; border-radius: 5px">
+     <table id= team-table style="border-collapse: separate; border-spacing: 0;">
       <thead>
         <tr>
-          <th colspan="2" style="padding: 10px;">
-            <input type="text" id="search-friends" placeholder="Search..." style="width: 90%; padding: 5px; margin-bottom: 10px;">
+          <th colspan="2" style="padding: 4px;">
+            <input type="text" id="search-teams" placeholder="Search..." style="width: 90%; padding: 5px; margin-bottom: 10px;margin-top: 10px;">
           </th>
         </tr>
       </thead>
-      <tbody id="buttons-container">
-        {{ users }}
+      <tbody>
+        {% for team in teams %}
+        <tr>
+        <td>
+          <input type="checkbox" name="select_team" value="{{ team.team_id }}">
+        </td>
+          <td>
+            <button style="width: 120px; align-content: left;" class="profile-button" onclick="window.location.href='../{{ team.team_name | urlencode }}/team_view'">
+              {{ team.team_name }}
+            </button>
+          </td>
+        </tr>
+      {% endfor %}
       </tbody>
     </table>
+    <br>
   </div>
-  
+
+<br>
+
+<form id="createTeam" action="/createTeam" method="POST" style="display: flex; flex-direction: column; align-items: left ; width: 100%;">
+<input type="text" name="team_name" placeholder="Team name" style="width:180px">
+<button type="submit" style="width: 100px; background-color: lightgreen; font-weight:bold">
+  Create team</button>
+</form>
+{% if team_message %}
+  <p style="font-weight: bold; color: {{ team_color }};">{{ team_message }}</p>
+{% endif %}
+<form id="quit-team" action="/quitTeam" method="POST" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+<label style="font-size: 12px; margin-bottom: 8px;"><input type="checkbox" name="conf" required>Confirm</label>
+<button type="submit"
+style="width: 145px; background-color: red; color: black; font-weight: bold; border-radius: 5px; cursor: pointer;">
+Quit teams
+</button>
+</form>
+
+</div>
+
+<div id="friend-panel">
+
+<h3>Friends</h3>
+
+<div style="max-height: 324px; overflow-y: auto; border: 1px solid black; border-radius: 5px">
+
+    <table id= "user-table" max-height: style="border-collapse: separate; border-spacing: 0;">
+    <thead>
+      <tr>
+        <th colspan="2" style="padding: 4px;">
+          <input type="text" id="search-users" placeholder="Search..." style="width: 90%; padding: 5px; margin-bottom: 10px;margin-top: 10px;">
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+     {% for user in users %}
+        <tr>
+        <td>
+          <input type="checkbox" name="select_user" value="{{ user.user_id }}">
+        </td>
+          <td>
+            <button style="width: 120px; align-content: left;" class="profile-button" onclick="window.location.href='../{{ user.user_name | urlencode }}/view'">
+              <img style="width: 26px; height: 26px;" src="{{ user.user_img }}"> {{ user.user_name }}
+            </button>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+  </div>
   <br>
-  <h3>Select a team</h3>
-  <div class="search-container">
-  <input type="text" id="search-teams" placeholder="Search...">
-  <div id="team-container">
-    <div class="team-item">Alice</div>
-    <div class="team-item">Bob</div>
-    <div class="team-item">Charlie</div>
-    <div class="team-item">David</div>
-    <div class="team-item">Eve</div>
-  </div>
+<form id="add-to-team" action="/addToTeam" method="POST" style="display: none; flex-direction: column; align-items: left; width: 100%;">
+
+<button type="submit"
+style="width: 145px; background-color: lightgreen; color: black; font-weight: bold; border-radius: 5px; cursor: pointer;">
+Add to team
+</button>
+</form>
+
+{% if member_message %}
+  <p style="font-weight: bold; color: {{ member_color }};">
+    {{ member_message }}
+  </p>
+{% endif %}
 </div>
 
-<div style="text-align: center; margin-top: 10px;">
-  <button id="add-member-btn" type="submit" style="display: none;">Add to team</button>
 </div>
-
-</div>
-
-
-
-
 
 <script>
-const container = document.getElementById('buttons-container');
-const searchFriendInput = document.getElementById('search-friends');
+  // search teams table
+const searchTeamInput = document.getElementById('search-teams');
+const teamRows = document.querySelectorAll('#team-table tbody tr');
 
-// Convert object to array of {label, link}
-const usersArray = Object.entries(user_links).map(([label, link]) => ({ label, link }));
+searchTeamInput.addEventListener('input', function () {
+    const filter = searchTeamInput.value.toLowerCase();
+    teamRows.forEach(row => {
+        const nameText = row.textContent.toLowerCase();
+        row.style.display = nameText.includes(filter) ? '' : 'none';
+    })
+  });
 
-// Store checkbox states
-const checkedUsers = {}; // { label: true/false }
+// search users table
+const searchUserInput = document.getElementById('search-users');
+const userRows = document.querySelectorAll('#user-table tbody tr');
 
-function renderButtons(filter = "") {
-  container.innerHTML = "";
-
-  usersArray
-    .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
-    .forEach(item => {
-      // Table row
-      const tr = document.createElement('tr');
-      tr.style.display = "flex"; // Use flex for scrollable tbody
-      tr.style.alignItems = "center";
-      tr.style.marginBottom = "5px";
-
-      // Checkbox cell
-      const tdCheckbox = document.createElement('td');
-      tdCheckbox.style.width = "30px";
-      const checkbox = document.createElement('input');
-      checkbox.type = "checkbox";
-      checkbox.value = item.label;
-      checkbox.checked = !!checkedUsers[item.label];
-      checkbox.onclick = (e) => {
-        e.stopPropagation();
-        checkedUsers[item.label] = checkbox.checked;
-      };
-      tdCheckbox.appendChild(checkbox);
-
-      // Button cell
-      const tdButton = document.createElement('td');
-      tdButton.style.flexGrow = "1";
-      const btn = document.createElement('button');
-      btn.style.display = "flex";
-      btn.style.alignItems = "center";
-      btn.style.gap = "10px";
-      btn.style.width = "190px";
-      btn.style.height = "30px";
-      btn.style.border = "1px solid black";
-      btn.style.backgroundColor = "#e0f0ff";
-      btn.style.cursor = "pointer";
-
-      // Image
-      const img = document.createElement('img');
-      img.src = user_imgs[item.label]
-      //img.src = `/static/images/${item.label}.png`;
-      img.alt = item.label;
-      img.style.width = "24px";
-      img.style.height = "24px";
-
-      // Text
-      const labelText = document.createTextNode(item.label);
-
-      btn.appendChild(img);
-      btn.appendChild(labelText);
-
-      btn.onclick = () => window.location.href = item.link;
-
-      tdButton.appendChild(btn);
-
-      tr.appendChild(tdCheckbox);
-      tr.appendChild(tdButton);
-
-      container.appendChild(tr);
-    });
-}
-
-// Initial render
-renderButtons();
-
-// Filter on input
-searchFriendInput.addEventListener('input', (e) => {
-  renderButtons(e.target.value);
-});
+searchUserInput.addEventListener('input', function () {
+    const filter = searchUserInput.value.toLowerCase();
+    userRows.forEach(row => {
+        const nameText = row.textContent.toLowerCase();
+        row.style.display = nameText.includes(filter) ? '' : 'none';
+    })
+  });
 </script>
-
-
-
-
-<script>
-const searchInput = document.getElementById('search-teams');
-const listContainer = document.getElementById('team-container');
-const items = Array.from(listContainer.getElementsByClassName('team-item'));
-
-// Filter and show options only when text is entered
-searchInput.addEventListener('input', () => {
-  const filter = searchInput.value.toLowerCase();
-
-  if (filter === "") {
-    listContainer.style.display = 'none';
-    return;
-  }
-
-  let anyVisible = false;
-  items.forEach(item => {
-    if (item.textContent.toLowerCase().includes(filter)) {
-      item.style.display = 'block';
-      anyVisible = true;
-    } else {
-      item.style.display = 'none';
-    }
-  });
-
-  listContainer.style.display = anyVisible ? 'block' : 'none';
-});
-
-// Select a single option
-items.forEach(item => {
-  item.addEventListener('click', () => {
-    // Remove previous selection
-    items.forEach(i => i.classList.remove('selected'));
-    // Highlight clicked item
-    item.classList.add('selected');
-    // Set input value to selected option
-    searchInput.value = item.textContent;
-    // Hide options after selection
-    listContainer.style.display = 'none';
-    console.log('Selected:', item.textContent);
-
-
-  });
-});
-
-// Hide the list if clicked outside
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.search-container')) {
-    listContainer.style.display = 'none';
-  }
-});
-
-</script>
-
-
-<div style="text-align: center; margin-top: 10px;">
-  <button id="add-member-btn" type="submit" style="display: none;">Add friends to team</button>
-</div>
-
-<script>
-const addMemberBtn = document.getElementById('add-member-btn');
-
-// Show button when an item is selected
-items.forEach(item => {
-  item.addEventListener('click', () => {
-    // Remove previous selection
-    items.forEach(i => i.classList.remove('selected'));
-
-    // Highlight clicked item
-    item.classList.add('selected');
-
-    // Set input value to selected option
-    searchInput.value = item.textContent;
-
-    // Hide options after selection
-    listContainer.style.display = 'none';
-    console.log('Selected:', item.textContent);
-
-    // Show the confirm button
-    addMemberBtn.style.display = 'inline-block'; // inline-block keeps button centered
-  });
-});
-
-// Optional: handle button click
-//addMemberBtn.addEventListener('click', () => {
-//  alert('You selected: ' + searchInput.value);
-//});
-//</script>
-
-           
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-</body>
-</html>
-
-

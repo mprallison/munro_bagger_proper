@@ -88,11 +88,30 @@ window.gapIconUrl = '/static/images/gap.png'
 addMapMarkers(window.locations);
 </script>
 
-<div id="navigate">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+<!--navigate portal-->
+{% if logged_in %}
+  <div id="navigate">
+    <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+    <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+    <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+  </div>
+{% else %}
+<div style="display: flex;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 10px;
+            background-color: rgba(255, 255, 255, 0.6);
+            color: black;
+            border: 1px solid black;
+            border-radius: 5px;
+            text-align: center;
+            width: 100px;
+            height: 20px;">
+  
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
 </div>
+{% endif %}
 
 </body>
 </html>

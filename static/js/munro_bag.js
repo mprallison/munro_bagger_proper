@@ -1,7 +1,9 @@
-// need global listener as form is generated dynamically
+// need global listener (on submit) as form is generated dynamically
 
 document.addEventListener('submit', async (event) => {
+    // check event exists and matches target elem
     if (event.target && event.target.id === 'bag-form') {
+        // stop default behaviour
         event.preventDefault();
 
         const formEl = event.target;

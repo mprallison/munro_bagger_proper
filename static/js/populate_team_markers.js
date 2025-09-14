@@ -33,26 +33,15 @@ export function addMapMarkers(locations) {
             .on('click', e => {
                 const popupContent = `
                     <div class="pop-up">
-                        <h3 style="margin: 0;">${loc.date === null ? loc.name : `🏔️${loc.name}👜`}</h3>
+                        <h3 style="margin: 0;">${loc.name}</h3>
                         <p style="margin: 0; font-size: 12px; text-align: center;">
                             <a href="${loc.whl_url}" target="_blank">walkhighlands</a>
                         </p>
                         <br>
-
                         <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
                         <strong>Height:</strong><span>${loc.height}</span>
                         <strong>Region:</strong><span>${loc.region}</span>
                         </div>
-                        ${loc.date === null
-                        ? ''
-                        : `<hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
-                            <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                                <strong>Date:</strong><span>${loc.date}</span>
-                                ${loc.distance ? `<strong>Distance:</strong><span>${loc.distance}</span>` : ''}
-                                ${loc.friends ? `<strong>Friends:</strong><span>${loc.friends}</span>` : ''}
-                                ${loc.notes ? `<strong>Notes:</strong><span>${loc.notes}</span>` : ''}
-                            </div>
-                            `}
                     </div>
                 `;
                 L.popup()

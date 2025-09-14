@@ -1,4 +1,8 @@
+
+//osmap api key
 const apiKey = window.API_KEY 
+
+//init leaflet map
 
 //centre to scotland
  var map = L.map('map', {

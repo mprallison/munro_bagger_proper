@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session, request
 from data_queries.munro_data_queries import get_munro_data
 from routes.auth import auth_bp
 from routes.pages import pages_bp
@@ -19,19 +19,24 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(pages_bp)
 app.register_blueprint(actions_bp)
 
+#home page
 @app.route("/")
-def index():
+def index(message=None, color=None):
 
     session.clear()
     locations = get_munro_data(DB)
 
-    return render_template('index.html', locations=locations, os_apikey=os_apikey)
+    message = request.args.get("message")
+    color = request.args.get("color")
+
+    return render_template('index.html', locations=locations, os_apikey=os_apikey, message=message, color=color)
 
 @app.errorhandler(MethodNotAllowed)
 def handle_405(e):
 
     return redirect(url_for("index"))
 
+#page not found
 @app.errorhandler(404)
 def page_not_found(error):
 
@@ -41,6 +46,7 @@ def page_not_found(error):
     "<br><br><br><br><br>&nbsp;&nbsp;&nbsp;........... " \
     "splash! Silence again.", 404
 
+#prevent browser back if logout or del profile
 @app.after_request
 def add_header(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"

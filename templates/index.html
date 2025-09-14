@@ -94,12 +94,12 @@
   <div class="links">
     <a href="#" id="toggle-form">{{ "To login" if show_signup else "To sign up" }}</a>
   </div>
-  <br>
-  <div id="login-error" style="color: #D10000;">{{ error|default('') }}</div>
-  <div id="sign-up-error" style="color:{{ color }};">{{ message|default('') }}</div>
+  {% if message %}
+  <p style="font-weight: bold; color: {{ color }};">
+    {{ message }}
+  </p>
+  {% endif %}
 </div>
-
-
 
 <!--add base map-->
 <script src="/static/js/base_map.js"></script>

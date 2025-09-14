@@ -59,13 +59,13 @@ def get_user_data_log(user_name, DB):
 def add_bag_to_db(data, DB):
 
     conn = sqlite3.connect(DB)
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
     insert_bag_query = """INSERT INTO bags (munro_id, user_id, date, distance, friends, notes, private)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                         """
 
-    cursor.execute(insert_bag_query, (
+    cur.execute(insert_bag_query, (
                 data["munro_id"],
                 data["user_id"],
                 data["date"],
@@ -80,9 +80,9 @@ def add_bag_to_db(data, DB):
                         WHERE munro_id = ?
                         """
 
-    cursor.execute(get_coords_query, (data["munro_id"],))
+    cur.execute(get_coords_query, (data["munro_id"],))
 
-    munro_coords = cursor.fetchone() 
+    munro_coords = cur.fetchone() 
 
     conn.commit()
     conn.close()
@@ -92,13 +92,13 @@ def add_bag_to_db(data, DB):
 def del_bag_from_db(data, DB):
 
     conn = sqlite3.connect(DB)
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
     del_bag_query = """DELETE FROM bags
                 WHERE munro_id = ? AND user_id = ?;
                 """
 
-    cursor.execute(del_bag_query, (
+    cur.execute(del_bag_query, (
                                 data["munro_id"],
                                 data["user_id"],
                                 ))
@@ -108,9 +108,9 @@ def del_bag_from_db(data, DB):
                         WHERE munro_id = ?
                         """
 
-    cursor.execute(get_coords_query, (data["munro_id"],))
+    cur.execute(get_coords_query, (data["munro_id"],))
 
-    munro_coords = cursor.fetchone() 
+    munro_coords = cur.fetchone() 
 
     conn.commit()
     conn.close()

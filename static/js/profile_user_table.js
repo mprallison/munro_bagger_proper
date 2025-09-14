@@ -8,15 +8,13 @@ const checkedUsers = {};
 
 export function addUserButtons(filter = "") {
 
-    
   container.innerHTML = "";
-
   usersArray
     .filter(item => item.label.toLowerCase().includes(filter.toLowerCase()))
     .forEach(item => {
       // Table row
       const tr = document.createElement('tr');
-      tr.style.display = "flex"; // Use flex for scrollable tbody
+      tr.style.display = "flex";
       tr.style.alignItems = "center";
       tr.style.marginBottom = "5px";
 
@@ -70,5 +68,3 @@ export function addUserButtons(filter = "") {
       container.appendChild(tr);
     });
 }
-
-//window.addUserButtons = addUserButtons;

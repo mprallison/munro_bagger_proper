@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>munrosWithFriends</title>
+  <link rel="icon" href="/static/images/munro.png" type="image/png">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <script>window.API_KEY = "{{ os_apikey }}";</script>
+
+  <script type="module" src="/static/js/search_map_sidebar.js"></script>
+  <script type="module" src="/static/js/navigate_to_coords.js"></script>
+  <script type="module" src="/static/js/filter_map_sidebar.js"></script>
+  <script type="module" src="/static/js/toggle_side_bar.js"></script>
+  <!--leaflet stylesheet-->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<!--add sidebar table with color for bags-->
+<div id="table_layer">
+  <table id="mountainTable">
+    <colgroup><col style="width: 120px"></colgroup>
+    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
+      <th style="text-align: left;">
+        Name (282)<br>
+        <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
+
+        <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
+          <select style="width: 60px;" id="idFilter">
+            <option value="">all</option>
+          </select>
+          <span id="countDisplay" style="font-weight:bold;"></span>
+        </div>
+      </th>
+
+    <tbody style="display:block; margin-top: 55px;">
+      {% for loc in log_data %}
+        <tr>
+            {% if loc.date is none %}
+            <td id="gap" data-munro-id="{{loc.munro_id}}"> 
+              <button onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
+              {{ loc.name }}
+            </button>
+            {% else %}
+            <td id="{{loc.date[:4]}}" data-munro-id="{{loc.munro_id}}"> 
+            <button style = "background-color: #93C572;"
+                  onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
+              {{ loc.name }}
+            </button>
+            
+            {% endif %}
+
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+<!-- Toggle Button -->
+<button id="toggleSidebar">Hide table</button>
+
+<!--add base map-->
+<script src="/static/js/base_map.js">
+console.log(window.layerGroup)
+
+</script>
+
+<script type="module">
+  import { addMapMarkers } from '/static/js/populate_markers.js';
+//convert jinja to js to avoid template with js combo nightmare
+window.locations = {{ log_data|tojson|safe }};
+window.userIconUrl = "{{ user_img}}";
+window.gapIconUrl = '/static/images/gap.png'
+
+addMapMarkers(window.locations);
+</script>
+
+<!--navigate portal-->
+{% if logged_in %}
+  <div id="navigate">
+    <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+    <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+    <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+  </div>
+{% else %}
+<div style="display: flex;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 10px;
+            background-color: rgba(255, 255, 255, 0.6);
+            color: black;
+            border: 1px solid black;
+            border-radius: 5px;
+            text-align: center;
+            width: 100px;
+            height: 20px;">
+  
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
+</div>
+{% endif %}
+
+</body>
+</html>

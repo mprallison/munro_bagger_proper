@@ -108,13 +108,16 @@ locations.forEach(loc => {
         .on('click', e => {
             const popupContent = `
             <div id=pop-up style="width:300px;">
-              <h3>
+              <h3 style="margin: 0;">
                 ${loc.date === null
                     ? `${loc.name}`
 
                     : `🏔️&#8288;${loc.name}&#8288;👜`}
-              
               </h3>
+
+              <p style="margin: 0; font-size: 12px; text-align: center;">
+                <a href="${loc.whl_url}" target="_blank">walkhighlands</a>
+              </p><br>
         
               
               ${loc.date === null
