@@ -54,7 +54,7 @@ def user_profile_view(user, logged_in=False):
         if "user_id" in session:
             logged_in=True
         
-        return render_template("map_view.html", log_data=log_data,
+        return render_template("user_map_view.html", log_data=log_data,
                                                 os_apikey=os_apikey,
                                                 user=user,
                                                 user_img=user_img,
@@ -113,7 +113,52 @@ def user_profile_page(user,team_message=None, team_color=None, member_message=No
     
 #user viewer page
 @pages_bp.route("/<team>/team_view")
-def team_view(team):
+def team_view(team, logged_in=False, user=False):
+
+    def hot_cold_hex(n_members):
+
+        """return list of spectrum colors for team munro coverage. 
+        can update hex colors in list
+        """
+
+        import numpy as np
+        import matplotlib.colors as mcolors
+
+        cmap = mcolors.LinearSegmentedColormap.from_list("red_green", ["red", "blue"])
+        
+        color_list = [mcolors.to_hex(cmap(i)) for i in np.linspace(0, 1, n_members+1)]
+
+        return color_list
+
+    #if user name not found in db go to lost page
+    if check_team_exists(team, DB) == 0:
+        return render_template("lost_map.html")
+    #else return user view page
+    else:
+        os_apikey = os.getenv("OSMAP_APIKEY")
+
+        if "user_id" in session:
+            logged_in=True
+            user = session["user_name"]
+
+        log_data, member_count, _ = get_team_data_log(team, DB)
+
+        log_data = log_data.to_dict(orient='records')
+
+        color_list = hot_cold_hex(member_count)
+
+        return render_template("team_map_view.html", os_apikey=os_apikey,
+                                                    log_data=log_data,
+                                                    logged_in=logged_in,
+                                                    team=team,
+                                                    user=user, 
+                                                    color_list=color_list
+                                                    )
+    
+
+#user viewer page
+@pages_bp.route("/<team>/board")
+def team_board(team, logged_in=False, user=False):
 
     #if user name not found in db go to lost page
     if check_team_exists(team, DB) == 0:
@@ -121,7 +166,33 @@ def team_view(team):
 
     #else return user view page
     else:
-        #log_data, bag_total = get_user_complete_log(user, DB)
-        #user_img = get_user_image(user)
+        if "user_id" in session:
+            logged_in=True
+            user = session["user_name"]
+
         
-        return render_template("index.html")
+        log_data, _, team_members = get_team_data_log(team, DB)
+
+        user_names = list(map(lambda x: x[1], team_members))
+
+        def split_users(user_field):
+
+            """return if username in bags list"""
+            if user in user_field.split(", "):
+                return "bag"
+            else:
+                return "gap"
+
+        #append each user bags to col  
+        for user in user_names:
+            log_data[user] = log_data["user_name"].apply(lambda x: split_users(x))
+
+        team_data_df = log_data[["name", "count"]+user_names].copy()
+            
+        return team_data_df.to_html()
+
+        #return render_template("team_board.html", log_data=log_data,
+        #                                        logged_in=logged_in,
+        #                                        team=team,
+        #                                        user=user
+        #                                        )

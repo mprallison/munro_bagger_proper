@@ -1,16 +1,34 @@
-export function addMapMarkers(locations) {
+export function addTeamMapMarkers(locations) {
+
+
+    function createCircleIcon(color, count) {
+    return L.divIcon({
+        className: '',
+        html: `
+            <div style="
+                background-color: ${color+"CC"};
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+                border: 1px solid white;
+            ">
+                ${count}
+            </div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [9, 9],
+        popupAnchor: [0, 5]
+    });
+}
 
     // icon if gap
     const gapIcon = L.icon({
-        iconUrl: window.gapIconUrl,
-        iconSize: [18, 18],
-        iconAnchor: [10, 10],
-        popupAnchor: [0, -10]
-    });
-
-    // icon if bag
-    const bagIcon = L.icon({
-        iconUrl: window.userIconUrl,
+        iconUrl: '/static/images/gap.png',
         iconSize: [18, 18],
         iconAnchor: [10, 10],
         popupAnchor: [0, -10]
@@ -25,9 +43,12 @@ export function addMapMarkers(locations) {
     // at each munro location    
     locations.forEach(loc => {
         // gap or bag icon by presence of date
-        const peakIcon = loc.date === null ? gapIcon : bagIcon;
+        const teamIcon = loc.count === 0
+        ? gapIcon 
+        : createCircleIcon(color_list[loc.count], loc.count)
 
-        const marker = L.marker([loc.latitude, loc.longitude], { icon: peakIcon })
+
+        const marker = L.marker([loc.latitude, loc.longitude], { icon: teamIcon })
             .addTo(layerGroup)
             .bindTooltip(loc.name, { permanent: false, direction: 'top', offset: [-1, -7] })
             .on('click', e => {
@@ -42,6 +63,16 @@ export function addMapMarkers(locations) {
                         <strong>Height:</strong><span>${loc.height}</span>
                         <strong>Region:</strong><span>${loc.region}</span>
                         </div>
+                        ${loc.count === 0
+                        ? ''
+                        : `<hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
+                            <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
+                                ${loc.user_name ? `<strong>Baggers:</strong><span>${loc.user_name}</span>` : ''}
+ 
+                            </div>
+                            `}
+                        </div>
+
                     </div>
                 `;
                 L.popup()
@@ -52,4 +83,4 @@ export function addMapMarkers(locations) {
     });
 }
     
-window.addMapMarkers = addMapMarkers;
+window.addTeamMapMarkers = addTeamMapMarkers;

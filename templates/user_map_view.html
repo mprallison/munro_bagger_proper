@@ -22,7 +22,7 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
-<body>
+<body data-page="user">
 <div id="map"></div>
 
 <!--add sidebar table with color for bags-->
@@ -91,19 +91,7 @@ addMapMarkers(window.locations);
     <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
   </div>
 {% else %}
-<div style="display: flex;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 10px;
-            background-color: rgba(255, 255, 255, 0.6);
-            color: black;
-            border: 1px solid black;
-            border-radius: 5px;
-            text-align: center;
-            width: 100px;
-            height: 20px;">
-  
+<div id="homepage-button">
   <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
 </div>
 {% endif %}

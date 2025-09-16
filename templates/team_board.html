@@ -1,0 +1,15 @@
+hi there
+
+<!--navigate portal-->
+{% if logged_in %}
+
+<div id="navigate">
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ team }}/team_view'">View page</button>
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+</div>
+{% else %}
+<div id="homepage-button">
+  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
+</div>
+{% endif %}

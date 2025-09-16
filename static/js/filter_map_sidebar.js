@@ -1,4 +1,5 @@
 import { addMapMarkers } from '/static/js/populate_markers.js';
+import { addTeamMapMarkers } from '/static/js/populate_team_markers.js';
 
 const idFilter = document.getElementById('idFilter');
 const rows = document.querySelectorAll('#mountainTable tbody tr');
@@ -53,5 +54,12 @@ idFilter.addEventListener('change', () => {
 
   const locations = window.locations.filter(item => filterMunroIds.includes(item.munro_id));
 
-  addMapMarkers(locations);
+  const page = document.body.dataset.page;
+
+  if (page === "user") {
+    addMapMarkers(locations);
+  }
+  else {
+    addTeamMapMarkers(locations);
+  }
 });

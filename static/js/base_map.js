@@ -1,4 +1,3 @@
-
 //osmap api key
 const apiKey = window.API_KEY 
 
