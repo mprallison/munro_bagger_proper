@@ -1,4 +1,4 @@
-export function addTeamMapMarkers(locations) {
+export function addTeamMapMarkers(locations, color_list, user_imgs) {
 
 
     function createCircleIcon(color, count) {
@@ -53,22 +53,34 @@ export function addTeamMapMarkers(locations) {
             .bindTooltip(loc.name, { permanent: false, direction: 'top', offset: [-1, -7] })
             .on('click', e => {
                 const popupContent = `
-                    <div class="pop-up">
-                        <h3 style="margin: 0;">${loc.name}</h3>
-                        <p style="margin: 0; font-size: 12px; text-align: center;">
+                    <div style="max-width: 180px;" class="pop-up">
+                    
+                        <h3 style="margin: 0;font-weight:bold;">${loc.name}</h3>
+                        <p style="margin: 0; font-size: 12px; font-weight: bold; text-align: center;">
                             <a href="${loc.whl_url}" target="_blank">walkhighlands</a>
                         </p>
-                        <br>
-                        <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                        <strong>Height:</strong><span>${loc.height}</span>
-                        <strong>Region:</strong><span>${loc.region}</span>
-                        </div>
                         ${loc.count === 0
                         ? ''
                         : `<hr style="border: none; height: 0.5px; background-color: #333; margin: 10px 10px;">
-                            <div style="display:grid; grid-template-columns:max-content 1fr; row-gap:4px; column-gap:8px; font-size:13px; color:#000;">
-                                ${loc.user_name ? `<strong>Baggers:</strong><span>${loc.user_name}</span>` : ''}
- 
+                            <div style="text-align: center;">
+                                        
+                            ${loc.user_name
+                                ?   
+                                    loc.user_name
+                                    .split(', ')
+                                    .map(name => 
+                                        `<div style="display: inline-block; text-align: center;">
+                                        <img
+                                            src="${user_imgs[name]}"
+                                            alt="${name}"
+                                            style="width: 30px; height: 30px; display: block;"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"
+                                        />
+                                        <span style="display: none;">${name}</span>
+                                        </div>`)
+                                    .join(' ')
+                                : ''}
+
                             </div>
                             `}
                         </div>

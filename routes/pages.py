@@ -5,6 +5,7 @@ from data_queries.user_images import *
 from data_queries.munro_data_queries import * 
 import os
 from dotenv import load_dotenv
+import random
 
 pages_bp = Blueprint("pages", __name__)
 
@@ -113,7 +114,7 @@ def user_profile_page(user,team_message=None, team_color=None, member_message=No
     
 #user viewer page
 @pages_bp.route("/<team>/team_view")
-def team_view(team, logged_in=False, user=False):
+def team_view(team, logged_in=False, user=False, user_img=False, user_imgs=False):
 
     def hot_cold_hex(n_members):
 
@@ -140,6 +141,7 @@ def team_view(team, logged_in=False, user=False):
         if "user_id" in session:
             logged_in=True
             user = session["user_name"]
+            user_img = session["user_img"]
 
         log_data, member_count, _ = get_team_data_log(team, DB)
 
@@ -147,12 +149,21 @@ def team_view(team, logged_in=False, user=False):
 
         color_list = hot_cold_hex(member_count)
 
+        user_imgs = get_all_user_images(DB)
+
+        #filter out users with no image
+        user_imgs = {k: v for k, v in user_imgs.items() if v != '/static/images/bag.png'}
+
+
         return render_template("team_map_view.html", os_apikey=os_apikey,
                                                     log_data=log_data,
                                                     logged_in=logged_in,
+                                                    member_count=member_count,
                                                     team=team,
                                                     user=user, 
-                                                    color_list=color_list
+                                                    user_img=user_img,
+                                                    color_list=color_list,
+                                                    user_imgs=user_imgs
                                                     )
     
 
@@ -165,34 +176,31 @@ def team_board(team, logged_in=False, user=False):
         return render_template("lost_map.html")
 
     #else return user view page
-    else:
-        if "user_id" in session:
-            logged_in=True
-            user = session["user_name"]
+    if "user_id" in session:
+        logged_in=True
+        user = session["user_name"]
 
-        
-        log_data, _, team_members = get_team_data_log(team, DB)
+    team_df = get_team_table(team, DB)
 
-        user_names = list(map(lambda x: x[1], team_members))
+    team_df = team_df.drop(columns = ["region", "height", "whl_url"])
 
-        def split_users(user_field):
+    team_table_data = team_df.to_dict(orient='records')
 
-            """return if username in bags list"""
-            if user in user_field.split(", "):
-                return "bag"
-            else:
-                return "gap"
+    headers = team_table_data[0]
+    member_headers = list(headers.keys())[2:]
+    members = list(map(lambda x:x.split("<br>")[0], member_headers))
 
-        #append each user bags to col  
-        for user in user_names:
-            log_data[user] = log_data["user_name"].apply(lambda x: split_users(x))
+    header_member_dict = dict(zip(member_headers, members))
 
-        team_data_df = log_data[["name", "count"]+user_names].copy()
-            
-        return team_data_df.to_html()
+    random.shuffle(members)
 
-        #return render_template("team_board.html", log_data=log_data,
-        #                                        logged_in=logged_in,
-        #                                        team=team,
-        #                                        user=user
-        #                                        )
+    user_imgs = get_all_user_images(DB)
+
+    return render_template("team_board.html", data=team_table_data,
+                                            logged_in=logged_in,
+                                            user=user,
+                                            team=team,
+                                            members=members,
+                                            user_imgs=user_imgs,
+                                            header_member_dict=header_member_dict
+                                            )

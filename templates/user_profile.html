@@ -43,9 +43,9 @@
         }
 </script>
 </head>
-<body style="margin-left: 10px;overflow: auto; background-color: #B8FFB8;">
+<body style="margin-left:10px; overflow-x:auto; overflow-y:auto; background-color:#fff2e6;">
 
-<div id="col-container" style="display: flex;">
+<div id="col-container" style="display:flex; flex-wrap:nowrap; width:max-content;">
 
 <div id="profile-panel">
   <!--user profile panel-->
@@ -132,7 +132,7 @@
           <input type="checkbox" name="select_team" value="{{ team.team_id }}">
         </td>
           <td>
-            <button style="width: 120px; align-content: left;" class="profile-button" onclick="window.location.href='../{{ team.team_name | urlencode }}/team_view'">
+            <button style="width: 120px; align-content: left;" class="profile-button" onclick="window.location.href='../{{ team.team_name | urlencode }}/board'">
               {{ team.team_name }}
             </button>
           </td>
@@ -166,7 +166,7 @@ Quit teams
 
 <div id="friend-panel">
 
-<h3>Friends</h3>
+<h3>Users</h3>
 
 <div style="max-height: 324px; overflow-y: auto; border: 1px solid black; border-radius: 5px">
 
@@ -193,6 +193,7 @@ Quit teams
       {% endfor %}
     </tbody>
   </table>
+  <br>
   </div>
   <br>
 
@@ -236,3 +237,6 @@ searchUserInput.addEventListener('input', function () {
     })
   });
 </script>
+
+</body>
+</html>

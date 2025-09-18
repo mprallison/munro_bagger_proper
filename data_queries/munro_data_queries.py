@@ -178,3 +178,49 @@ def get_team_data_log(team_name, DB):
     team_data_df = team_data_df.drop(columns="user_id")
 
     return team_data_df, member_count, team_users
+
+def get_team_table(team_name, DB):
+
+    log_data, _, team_members = get_team_data_log(team_name, DB)
+
+    user_names = list(map(lambda x: x[1], team_members))
+
+    #explode users to count individual bags
+    split_user_df = log_data.copy()
+    split_user_df["user_name"] = split_user_df["user_name"].apply(lambda x:x.split(", "))
+    split_user_df = split_user_df.explode("user_name")
+
+    def split_users(user_field):
+
+        """return "bag" if user in field"""
+        if user in user_field.split(", "):
+            return "bag"
+        else:
+            return "gap"
+
+    #append each user bags as col
+    user_df = pd.DataFrame()
+    #add indiviudal bag count to dict
+    user_bag_count = {}
+    
+    for user in user_names:
+
+        user_df[user] = log_data["user_name"].apply(lambda x: split_users(x))
+
+        user_count = len(split_user_df[split_user_df["user_name"] == user])
+        user_bag_count[user] = user_count
+
+    #sort users by most -> least bags
+    sort_bag_count = dict(sorted(user_bag_count.items(), key=lambda item: item[1], reverse=True))
+    user_df = user_df[list(sort_bag_count.keys())]
+
+    #add bag count to user header
+    user_df.columns = list(map(lambda x: f"{x}<br>({sort_bag_count[x]})", user_df.columns))
+
+    #concat team to munro data
+    team_df = pd.concat([log_data[["name", "region", "height", "whl_url", "count"]], user_df], axis=1)
+
+    #add count of members to header
+    team_df = team_df.rename(columns = {"count": f"bags<br>(of {len(user_names)} baggers)"})
+
+    return team_df

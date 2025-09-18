@@ -60,6 +60,6 @@ idFilter.addEventListener('change', () => {
     addMapMarkers(locations);
   }
   else {
-    addTeamMapMarkers(locations);
+    addTeamMapMarkers(locations, color_list, user_imgs);
   }
 });

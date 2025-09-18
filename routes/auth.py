@@ -17,21 +17,21 @@ def login():
 
     #if user already logged in then ignore request
     if "user_id" in session:
-        return redirect(url_for("pages.user_profile_edit", user=session["user_name"]))
+        return redirect(url_for("pages.user_profile_view", user=session["user_name"]))
     
     #get user data from db
     user_name = request.form["user_name"]
     password = request.form["password"]
     user = get_user(user_name, password, DB)
 
-    #if valid create session and go to edit page
+    #if valid create session and go to view page
     if user and password:
         
         session["user_id"] = user[0]
         session["user_name"] = user[1]
         session["user_img"] = get_user_image(session["user_name"])
 
-        return redirect(url_for("pages.user_profile_edit", user=session["user_name"]))
+        return redirect(url_for("pages.user_profile_view", user=session["user_name"]))
     
     #else return error mesage
     else:

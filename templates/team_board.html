@@ -1,15 +1,312 @@
-hi there
+<!DOCTYPE html>
+<html>
 
-<!--navigate portal-->
-{% if logged_in %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>munrosWithFriends</title>
+  <link rel="icon" href="/static/images/munro.png" type="image/png">
 
-<div id="navigate">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ team }}/team_view'">View page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body style= "background-color: #fff2e6; margin-left:10px; overflow-x:auto; overflow-y:auto;"></body>
+
+<div class="parent" style="
+   
+            min-width: 400px;
+            background-color: #EBF6F9;
+            margin-top:20px;
+            margin-left:40px;
+            margin-right:40px;
+            border: 1px solid black; 
+            border-radius: 8px;
+            padding:10px;
+            position: relative;
+            display:flex;
+            flex-wrap:nowrap;
+            width:max-content;"
+           >
+
+<div style="margin-left: 10px; margin-top: 10px;">
+
+ {% if logged_in %}
+<div style="display: flex; gap: 10px;">
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ team| urlencode }}/team_view'">Team map</button>
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
+    <img style="width: 18px; height: 18px;" src="{{ user_imgs[user] }}"> 
+      Profile page</button>
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
 </div>
 {% else %}
-<div id="homepage-button">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
+<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+  <button style="width: 100px; text-align: center; background-color: #FFCCCB; font-weight:bold;" onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
 </div>
 {% endif %}
+
+<div style="display: column;">
+
+  <h2 style="margin-bottom: 10px; margin-top: 5px;"><u>{{ team }}</u></h2>
+
+  <p style="font-size: 18px; margin-top: 0; margin-bottom: 5px">
+{% for member in members %}
+  <a href='/{{ member| urlencode }}/view'
+     style="display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 8px; margin-right: 6px;
+            border: 1px solid black; border-radius: 8px;
+            text-decoration: none; color: inherit; background: lightgrey;">
+    
+    <img src="{{ user_imgs[member] }}" 
+         style="width: 24px; height: 24px; border-radius: 50%;">
+    {{ member }}
+  </a>
+{% endfor %}
+  </p>
+</div>
+</div>
+</div>
+
+
+<style>
+  /* general table header styling */
+  table th {
+    max-width: 80px;
+    min-width: 80px;
+    height: 40px;                   
+    padding: 4px 8px;
+    text-align: left;
+    vertical-align: top;
+    background-color: lightgrey;
+    border: 1px solid black;
+
+    /* truncate long text */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* optional: allow multi-line small labels below */
+  table th .sub-label {
+    display: block;
+    white-space: normal;             /* allow wrapping if needed */
+    font-size: 0.8em;
+    color: #555;
+  }
+  table tr {
+    height: 35px; 
+    text-align: left;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid black;
+    font-size:13px;
+  }
+</style>
+
+
+<div id="team-table" 
+     style="
+        max-width: calc(100vw - 50px); 
+        max-height: calc(100vh - 200px);  
+        border: 1px solid #ccc;
+        overflow: auto;
+        display: inline-block;
+        width: fit-content;
+        margin-left: 20px;
+        margin-top: 20px;
+     ">
+
+  <table border="1"
+         style="
+            border-collapse: collapse;
+            font-size: 16px;
+            background-color: #EBF6F9;
+            table-layout: fixed;
+            min-width: max-content;
+         ">
+    <colgroup>
+      <col style="width: 150px;">
+      <col style="width: 100px;">
+      {% set remaining_cols = data[0]|length - 2 %}
+      {% for i in range(remaining_cols) %}
+        <col style="width:80px;">
+      {% endfor %}
+    </colgroup>
+
+<thead>
+    <tr style="text-align: left; vertical-align: top; border: 1px solid black; background-color: lightgrey;">
+    {% for key in data[0].keys() %}
+      <th>
+        {{ key | capitalize | safe }}
+        {% if loop.index0 == 0 %}
+        <br>
+         <p style="margin: 2px;">(282)</p>
+       
+      <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
+      
+      {% elif loop.index0 == 1 %}
+        <br>
+          <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
+          <select style="width: 50px;" id="idFilter">
+            <option value="">all</option>
+          </select>
+        </div>
+
+      {% else %}
+        <br>
+          <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
+          <select style="width: 50px;" class="columnFilter" data-col="{{ loop.index0 }}">
+            <option value="">all</option>
+          </select>
+        </div>
+
+      {% endif %}
+
+
+      </th>
+    {% endfor %}
+  </tr>
+</thead>
+
+<tbody>
+  {% for row in data %}
+    <tr>
+      {% for key, value in row.items() %}
+        {% if loop.index0 == 0 %}
+          <td style="font-weight: bold;">
+            {{ value }}
+          </td>
+        {% elif loop.index0 == 1 %}
+          <td style="text-align:center; vertical-align: middle; font-weight: bold;">
+            {{ value }}
+          </td>
+        {% else %}
+          <td style="text-align:center; vertical-align: middle;" id="{{ 'gap' if value == 'gap' else 'bag' }}">
+            <img style="width: 28px; height: 28px; padding: 0;"
+            src="{{ '/static/images/gap.png' if value == 'gap' else user_imgs[header_member_dict[key]] }}">
+          </td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</tbody>
+
+</table>
+</div>
+
+<script>
+  //text input elem
+const searchInput = document.getElementById('searchInput');
+
+//munro table rows
+const rows = document.querySelectorAll('#team-table tbody tr');
+
+//on input filter rows
+searchInput.addEventListener('input', function () {
+    const filter = searchInput.value.toLowerCase();
+    rows.forEach(row => {
+    const nameText = row.cells[0].textContent.toLowerCase();
+    row.style.display = nameText.includes(filter) ? '' : 'none';
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const table = document.querySelector("#team-table table");
+  const tbody = table.tBodies[0];
+  const select = document.getElementById("idFilter");
+
+  // 1️⃣ Populate dropdown with unique values from second column (index 1)
+  const values = new Set();
+  for (let row of tbody.rows) {
+    values.add(row.cells[1].textContent.trim());
+  }
+
+  const sortedArray = Array.from(values).sort((a, b) => a - b);
+
+  sortedArray.forEach(val => {
+    const option = document.createElement("option");
+    option.value = val;
+    option.textContent = val;
+    select.appendChild(option);
+  });
+
+  // 2️⃣ Filter function
+  function filterTable() {
+    const filter = select.value;
+    for (let row of tbody.rows) {
+      const cellValue = row.cells[1].textContent.trim(); // second column
+      row.style.display = (filter === "" || cellValue === filter) ? "" : "none";
+    }
+  }
+
+  // 3️⃣ Listen for dropdown changes
+  select.addEventListener("change", filterTable);
+
+  // Optional: initial filter (show all)
+  filterTable();
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const table = document.querySelector("#team-table table");
+  const tbody = table.tBodies[0];
+  const filters = document.querySelectorAll(".columnFilter");
+
+  // Populate each filter dynamically
+  filters.forEach(select => {
+    const colIndex = parseInt(select.dataset.col);
+    const values = new Set();
+
+    for (let row of tbody.rows) {
+      const cell = row.cells[colIndex];
+      if (cell && cell.id) {
+        values.add(cell.id.trim());
+      }
+    }
+
+    Array.from(values).sort().forEach(val => {
+      const option = document.createElement("option");
+      option.value = val;
+      option.textContent = val;
+      select.appendChild(option);
+    });
+  });
+
+  // Function to filter table rows
+  function filterTable() {
+    for (let row of tbody.rows) {
+      let visible = true;
+
+      filters.forEach(select => {
+        const colIndex = parseInt(select.dataset.col);
+        const filterValue = select.value.trim();
+        const cell = row.cells[colIndex];
+        const cellId = cell ? cell.id.trim() : "";
+
+        if (filterValue && cellId !== filterValue) {
+          visible = false;
+        }
+      });
+
+      row.style.display = visible ? "" : "none";
+    }
+  }
+
+  // Attach event listener to each filter
+  filters.forEach(select => select.addEventListener("change", filterTable));
+
+  // Initial filtering (show all)
+  filterTable();
+});
+
+
+</script>
+
+
+
+
+</body>
+</html>

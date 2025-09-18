@@ -97,11 +97,11 @@ button:hover {
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 3px 14px rgba(0, 0, 0);
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 3px 14px rgba(0, 0, 0.0);
   }
 .leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
   }
 
 .popUp {
@@ -164,8 +164,8 @@ form {
     border: 1px solid black;
     border-radius: 5px;
     text-align: center;
-    width: 100px;
-    height: 78px;
+    width: 120px;
+    height: 85px;
     flex-direction: column;
     gap: 10px;
   }

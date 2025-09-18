@@ -1,4 +1,4 @@
-export function addMapMarkers(locations, color_list) {
+export function addMapMarkers(locations) {
 
     // icon if gap
     const gapIcon = L.icon({

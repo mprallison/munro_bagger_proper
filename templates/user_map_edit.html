@@ -172,11 +172,13 @@ locations.forEach(loc => {
 });
 </script>
 
-<div id="navigate">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
-</div>
+  <div id="navigate">
+    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
+    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
+      <img style="width: 16px; height: 16px;" src="{{ user_img }}"> 
+      Profile page</button></button>
+    <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+  </div>
 
 </body>
 </html>

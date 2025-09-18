@@ -20,6 +20,19 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+
+  <style>
+    .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: 0 3px 3px rgba(0, 0, 0.0);
+    }
+  .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.55) !important;
+    }
+  </style>
+
+
 </head>
 
 <body data-page="team">
@@ -33,16 +46,16 @@
       <th style="text-align: left;">
         Name (282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
-
         <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
           <select style="width: 60px;" id="idFilter">
             <option value="">all</option>
           </select>
           <span id="countDisplay" style="font-weight:bold;"></span>
         </div>
+        <p style="font-size: 12px; margin: 0; padding: 2px;">&nbsp;(from {{ member_count }} baggers)</p>
       </th>
 
-    <tbody style="display:block; margin-top: 55px;">
+    <tbody style="display:block; margin-top: 75px;">
 
       {% for loc in log_data %}
         <tr>
@@ -72,17 +85,20 @@
 //convert jinja to js to avoid template with js combo nightmare
 window.locations = {{ log_data|tojson|safe }};
 window.color_list = {{ color_list|safe }};
+window.user_imgs = {{ user_imgs|safe }};
 
-addTeamMapMarkers(window.locations, window.color_list );
+addTeamMapMarkers(window.locations, window.color_list, window.user_imgs);
 </script>
 
 <!--navigate portal-->
 {% if logged_in %}
 
-<div id="navigate">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ team| urlencode }}/board'">Board page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('auth.logout') }}'safe ">Logout</button>
+<div id="navigate" style="width:123px">
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ team| urlencode }}/board'">Team board</button>
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
+    <img style="width: 15px; height: 15px;" src="{{ user_img }}"> 
+      Profile page</button>
+  <button style="width: 120px; text-align: center;"onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
 </div>
 
 {% else %}

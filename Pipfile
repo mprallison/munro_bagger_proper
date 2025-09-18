@@ -11,6 +11,7 @@ jupyterlab = "*"
 python-dotenv = "*"
 pathlib = "*"
 matplotlib = "*"
+overrides = "*"
 
 [dev-packages]
 
