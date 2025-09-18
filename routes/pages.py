@@ -41,7 +41,7 @@ def user_profile_edit(user):
     
 #user viewer page
 @pages_bp.route("/<user>/view")
-def user_profile_view(user, logged_in=False):
+def user_profile_view(user, logged_in=False, session_user_img=False):
 
     #if user name naot found in db go to lost page
     if check_user_exists(user, DB) == 0:
@@ -54,13 +54,16 @@ def user_profile_view(user, logged_in=False):
 
         if "user_id" in session:
             logged_in=True
+            session_user_img = session["user_img"]
+
         
         return render_template("user_map_view.html", log_data=log_data,
                                                 os_apikey=os_apikey,
                                                 user=user,
                                                 user_img=user_img,
                                                 bag_total=bag_total,
-                                                logged_in=logged_in
+                                                logged_in=logged_in,
+                                                session_user_img=session_user_img
                                                 )
     
 #user profile page

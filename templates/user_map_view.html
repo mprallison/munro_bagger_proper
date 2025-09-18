@@ -86,10 +86,21 @@ addMapMarkers(window.locations);
 <!--navigate portal-->
 {% if logged_in %}
   <div id="navigate">
-    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+
+    <!--user session_user_img to check if user/view is of logged in or different user-->
+    {% if session_user_img != user_img %}
+
     <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
-      <img style="width: 16px; height: 16px;" src="{{ user_img }}"> 
-      Profile page</button></button>
+      <img style="width: 16px; height: 16px;" src="{{ session_user_img }}"> 
+      Profile page</button>
+
+   {% else %}
+
+   <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
+
+      <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+    {% endif %}
+
     <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
   </div>
 {% else %}
