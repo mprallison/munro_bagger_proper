@@ -33,9 +33,8 @@
 <!--add sidebar table with color for bags-->
 <div id="table_layer">
   <table id="mountainTable">
-    <colgroup><col style="width: 120px"></colgroup>
-    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
-      <th style="text-align: left;">
+    <thead style="position: fixed; top: 0; background: white; z-index: 1000;">
+      <th style="text-align: left; width: 125px">
         Name ({{ bag_total }}/282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
       </th>
@@ -172,11 +171,11 @@ locations.forEach(loc => {
 });
 </script>
 
-  <div id="navigate">
-    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
-    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-    <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
-  </div>
+<div id="navigate">
+  <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/view'">View page</button>
+  <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+  <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+</div>
 
 </body>
 </html>

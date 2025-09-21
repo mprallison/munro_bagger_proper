@@ -47,7 +47,7 @@ def signup():
     response = add_user(user_name, password, DB)
 
     if response == 200:
-        message, color = "Log in and 🏔️→👜", "#00D100"
+        message, color = "Log in and 🏔️👜", "#93C572"
     else:
         message, color = "Username taken!", "#D10000"
     

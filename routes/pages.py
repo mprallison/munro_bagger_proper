@@ -41,7 +41,7 @@ def user_profile_edit(user):
     
 #user viewer page
 @pages_bp.route("/<user>/view")
-def user_profile_view(user, logged_in=False, session_user_img=False):
+def user_profile_view(user, logged_in=False, session_user=False, session_user_img=False):
 
     #if user name naot found in db go to lost page
     if check_user_exists(user, DB) == 0:
@@ -54,6 +54,7 @@ def user_profile_view(user, logged_in=False, session_user_img=False):
 
         if "user_id" in session:
             logged_in=True
+            session_user = session["user_name"]
             session_user_img = session["user_img"]
 
         
@@ -63,6 +64,7 @@ def user_profile_view(user, logged_in=False, session_user_img=False):
                                                 user_img=user_img,
                                                 bag_total=bag_total,
                                                 logged_in=logged_in,
+                                                session_user=session_user,
                                                 session_user_img=session_user_img
                                                 )
     
@@ -129,7 +131,6 @@ def team_view(team, logged_in=False, user=False, user_img=False, user_imgs=False
         import matplotlib.colors as mcolors
 
         cmap = mcolors.LinearSegmentedColormap.from_list("red_green", ["red", "blue"])
-        
         color_list = [mcolors.to_hex(cmap(i)) for i in np.linspace(0, 1, n_members+1)]
 
         return color_list
@@ -147,7 +148,6 @@ def team_view(team, logged_in=False, user=False, user_img=False, user_imgs=False
             user_img = session["user_img"]
 
         log_data, member_count, _ = get_team_data_log(team, DB)
-
         log_data = log_data.to_dict(orient='records')
 
         color_list = hot_cold_hex(member_count)
@@ -156,7 +156,6 @@ def team_view(team, logged_in=False, user=False, user_img=False, user_imgs=False
 
         #filter out users with no image
         user_imgs = {k: v for k, v in user_imgs.items() if v != '/static/images/bag.png'}
-
 
         return render_template("team_map_view.html", os_apikey=os_apikey,
                                                     log_data=log_data,
@@ -168,7 +167,6 @@ def team_view(team, logged_in=False, user=False, user_img=False, user_imgs=False
                                                     color_list=color_list,
                                                     user_imgs=user_imgs
                                                     )
-    
 
 #user viewer page
 @pages_bp.route("/<team>/board")
@@ -184,9 +182,7 @@ def team_board(team, logged_in=False, user=False):
         user = session["user_name"]
 
     team_df = get_team_table(team, DB)
-
     team_df = team_df.drop(columns = ["region", "height", "whl_url"])
-
     team_table_data = team_df.to_dict(orient='records')
 
     headers = team_table_data[0]

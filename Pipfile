@@ -7,11 +7,9 @@ name = "pypi"
 flask = "*"
 pandas = "*"
 jinja2 = "*"
-jupyterlab = "*"
 python-dotenv = "*"
 pathlib = "*"
 matplotlib = "*"
-overrides = "*"
 
 [dev-packages]
 

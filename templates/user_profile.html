@@ -21,7 +21,7 @@
     const filtered_dates = bag_dates.filter(item => item !== null && item !== undefined);
     filtered_dates.sort()
 
-    const bag_years = filtered_dates.map(str => str.slice(0, 4));
+    const bag_years = filtered_dates.map(str => str.split('-')[0]);
     
     const counts = {};
     bag_years.forEach(item => {
@@ -45,7 +45,7 @@
 </head>
 <body style="margin-left:10px; overflow-x:auto; overflow-y:auto; background-color:#fff2e6;">
 
-<div id="col-container" style="display:flex; flex-wrap:nowrap; width:max-content;">
+<div id="col-container" style="display:flex; flex-wrap:nowrap; width:max-content; padding: 5px;">
 
 <div id="profile-panel">
   <!--user profile panel-->
@@ -84,7 +84,7 @@
 
         <br>
         <form action="/uploadImage" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
+        <input type="file" name="file" accept="image/*" required>
         <button style="width:150px;">Upload user image</button>
         </form>
         <br>
@@ -99,7 +99,7 @@
           style="display: flex; flex-direction: column; align-items: center; width: 100%;">
             <label style="font-size: 12px; margin-bottom: 8px;">
             <input type="checkbox" name="conf" required>
-            Confirm - permanently delete my profile and data
+            Confirm - delete my profile and data
             </label>
 
             <button type="submit"
@@ -147,7 +147,7 @@
 
 <form id="createTeam" action="/createTeam" method="POST" style="display: flex; flex-direction: column; align-items: left ; width: 100%;">
 <input type="text" name="team_name" placeholder="Team name" style="width:180px">
-<button type="submit" style="width: 100px; background-color: lightgreen; font-weight:bold">
+<button type="submit" style="width: 100px; background-color: #93C572; font-weight:bold">
   Create team</button>
 </form>
 {% if team_message %}
@@ -200,7 +200,7 @@ Quit teams
 <form id="add-to-team" action="/addToTeam" method="POST" style="display: none; flex-direction: column; align-items: left; width: 100%;">
 
 <button type="submit"
-style="width: 145px; background-color: lightgreen; color: black; font-weight: bold; border-radius: 5px; cursor: pointer;">
+style="width: 145px; background-color: #93C572; color: black; font-weight: bold; border-radius: 5px; cursor: pointer;">
 Add to team
 </button>
 </form>

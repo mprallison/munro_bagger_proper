@@ -1,5 +1,4 @@
 // need global listener as form is generated dynamically
-
 document.addEventListener('submit', async (event) => {
     if (event.target && event.target.id === 'del-form') {
         event.preventDefault();

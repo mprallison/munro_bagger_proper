@@ -10,11 +10,9 @@
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
-<body style= "background-color: #fff2e6; margin-left:10px; overflow-x:auto; overflow-y:auto;"></body>
+<body style= "background-color: #fff2e6; margin-left:10px; overflow-x:auto; overflow-y:auto;">
 
-<div class="parent" style="
-   
-            min-width: 400px;
+<div style="min-width: 400px;
             background-color: #EBF6F9;
             margin-top:20px;
             margin-left:40px;
@@ -25,8 +23,8 @@
             position: relative;
             display:flex;
             flex-wrap:nowrap;
-            width:max-content;"
-           >
+            width:max-content; 
+          ">
 
 <div style="margin-left: 10px; margin-top: 10px;">
 
@@ -51,10 +49,17 @@
   <p style="font-size: 18px; margin-top: 0; margin-bottom: 5px">
 {% for member in members %}
   <a href='/{{ member| urlencode }}/view'
-     style="display: inline-flex; align-items: center; gap: 4px;
-            padding: 4px 8px; margin-right: 6px;
-            border: 1px solid black; border-radius: 8px;
-            text-decoration: none; color: inherit; background: lightgrey;">
+     style="display: inline-flex; 
+        align-items: center; 
+        gap: 4px;
+        padding: 4px 8px; 
+        margin-right: 6px;
+        border: 1px solid black; 
+        border-radius: 8px;
+        text-decoration: none; 
+        color: black;
+        background-color: #e0f0ff;
+        ">
     
     <img src="{{ user_imgs[member] }}" 
          style="width: 24px; height: 24px; border-radius: 50%;">
@@ -66,9 +71,7 @@
 </div>
 </div>
 
-
 <style>
-  /* general table header styling */
   table th {
     max-width: 80px;
     min-width: 80px;
@@ -78,20 +81,18 @@
     vertical-align: top;
     background-color: lightgrey;
     border: 1px solid black;
-
-    /* truncate long text */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  /* optional: allow multi-line small labels below */
   table th .sub-label {
     display: block;
-    white-space: normal;             /* allow wrapping if needed */
+    white-space: normal;           
     font-size: 0.8em;
     color: #555;
   }
+
   table tr {
     height: 35px; 
     text-align: left;
@@ -103,27 +104,25 @@
   }
 </style>
 
-
 <div id="team-table" 
-     style="
-        max-width: calc(100vw - 50px); 
-        max-height: calc(100vh - 200px);  
-        border: 1px solid #ccc;
-        overflow: auto;
-        display: inline-block;
-        width: fit-content;
-        margin-left: 20px;
-        margin-top: 20px;
-     ">
+     style="max-width: calc(100vw - 50px); 
+            max-height: calc(100vh - 200px);  
+            border: 1px solid #ccc;
+            overflow: auto;
+            display: inline-block;
+            width: fit-content;
+            margin-left: 20px;
+            margin-top: 20px;
+          ">
 
   <table border="1"
-         style="
-            border-collapse: collapse;
+      style="border-collapse: collapse;
             font-size: 16px;
             background-color: #EBF6F9;
             table-layout: fixed;
             min-width: max-content;
-         ">
+          ">
+          
     <colgroup>
       <col style="width: 150px;">
       <col style="width: 100px;">
@@ -151,7 +150,6 @@
             <option value="">all</option>
           </select>
         </div>
-
       {% else %}
         <br>
           <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
@@ -159,10 +157,7 @@
             <option value="">all</option>
           </select>
         </div>
-
       {% endif %}
-
-
       </th>
     {% endfor %}
   </tr>
@@ -195,13 +190,10 @@
 </div>
 
 <script>
-  //text input elem
+//search munros
 const searchInput = document.getElementById('searchInput');
-
-//munro table rows
 const rows = document.querySelectorAll('#team-table tbody tr');
 
-//on input filter rows
 searchInput.addEventListener('input', function () {
     const filter = searchInput.value.toLowerCase();
     rows.forEach(row => {
@@ -211,13 +203,14 @@ searchInput.addEventListener('input', function () {
 });
 </script>
 
+
 <script>
+  //filter count column
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.querySelector("#team-table table");
   const tbody = table.tBodies[0];
   const select = document.getElementById("idFilter");
 
-  // 1️⃣ Populate dropdown with unique values from second column (index 1)
   const values = new Set();
   for (let row of tbody.rows) {
     values.add(row.cells[1].textContent.trim());
@@ -232,42 +225,29 @@ document.addEventListener("DOMContentLoaded", () => {
     select.appendChild(option);
   });
 
-  // 2️⃣ Filter function
   function filterTable() {
     const filter = select.value;
     for (let row of tbody.rows) {
-      const cellValue = row.cells[1].textContent.trim(); // second column
+      const cellValue = row.cells[1].textContent.trim();
       row.style.display = (filter === "" || cellValue === filter) ? "" : "none";
     }
   }
 
-  // 3️⃣ Listen for dropdown changes
   select.addEventListener("change", filterTable);
-
-  // Optional: initial filter (show all)
   filterTable();
 });
 </script>
 
 <script>
+  //filter use rows by div ids "bag" or "gap"
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.querySelector("#team-table table");
   const tbody = table.tBodies[0];
   const filters = document.querySelectorAll(".columnFilter");
 
-  // Populate each filter dynamically
+
   filters.forEach(select => {
-    const colIndex = parseInt(select.dataset.col);
-    const values = new Set();
-
-    for (let row of tbody.rows) {
-      const cell = row.cells[colIndex];
-      if (cell && cell.id) {
-        values.add(cell.id.trim());
-      }
-    }
-
-    Array.from(values).sort().forEach(val => {
+    ["bag", "gap"].forEach(val => {
       const option = document.createElement("option");
       option.value = val;
       option.textContent = val;
@@ -275,38 +255,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Function to filter table rows
   function filterTable() {
     for (let row of tbody.rows) {
       let visible = true;
 
       filters.forEach(select => {
-        const colIndex = parseInt(select.dataset.col);
-        const filterValue = select.value.trim();
-        const cell = row.cells[colIndex];
-        const cellId = cell ? cell.id.trim() : "";
+        const colIndex = parseInt(select.dataset.col, 10);
+        const filterValue = select.value;
+        const cellId = row.cells[colIndex]?.id.trim() ?? "";
 
         if (filterValue && cellId !== filterValue) {
           visible = false;
         }
       });
-
       row.style.display = visible ? "" : "none";
     }
   }
-
-  // Attach event listener to each filter
   filters.forEach(select => select.addEventListener("change", filterTable));
-
-  // Initial filtering (show all)
   filterTable();
 });
-
-
 </script>
-
-
-
 
 </body>
 </html>

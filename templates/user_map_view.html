@@ -28,12 +28,11 @@
 <!--add sidebar table with color for bags-->
 <div id="table_layer">
   <table id="mountainTable">
-    <colgroup><col style="width: 120px"></colgroup>
-    <thead id="tableHeader" style="position: fixed; top: 0; background: white; z-index: 1000;">
-      <th style="text-align: left;">
+
+    <thead style="position: fixed; top: 0; background: white; z-index: 1000;">
+      <th style="text-align: left; width: 125px">
         Name ({{ bag_total }}/282)<br>
         <input type="text" id="searchInput" placeholder="🔍" style="width: 100px; text-align: left;">
-
         <div style="padding-top:5px; display:flex; align-items:center; gap:10px;">
           <select style="width: 60px;" id="idFilter">
             <option value="">all</option>
@@ -51,7 +50,7 @@
               {{ loc.name }}
             </button>
             {% else %}
-            <td id="{{loc.date[:4]}}" data-munro-id="{{loc.munro_id}}"> 
+            <td id="{{ loc.date.split('-')[0] }}" data-munro-id="{{loc.munro_id}}"> 
             <button style = "background-color: #93C572;"
                   onclick="goToLocation({{ loc.latitude }}, {{ loc.longitude }})">
               {{ loc.name }}
@@ -73,8 +72,7 @@
 <!--add base map-->
 <script src="/static/js/base_map.js"></script>
 
-<script type="module">
-  import { addMapMarkers } from '/static/js/populate_markers.js';
+<script type="module">import { addMapMarkers } from '/static/js/populate_markers.js';
 //convert jinja to js to avoid template with js combo nightmare
 window.locations = {{ log_data|tojson|safe }};
 window.userIconUrl = "{{ user_img}}";
@@ -86,27 +84,23 @@ addMapMarkers(window.locations);
 <!--navigate portal-->
 {% if logged_in %}
   <div id="navigate">
-
     <!--user session_user_img to check if user/view is of logged in or different user-->
-    {% if session_user_img != user_img %}
+    {% if session_user != user %}
 
     <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
       <img style="width: 16px; height: 16px;" src="{{ session_user_img }}"> 
       Profile page</button>
 
    {% else %}
-
    <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/edit'">Edit page</button>
-
-      <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
-    {% endif %}
-
-    <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+   <button style="width: 120px; height: 22px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">Profile page</button>
+   {% endif %}
+  <button style="width: 120px; height: 22px; text-align: center;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
   </div>
 {% else %}
-<div id="homepage-button">
-  <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
-</div>
+  <div id="homepage-button">
+    <button style="width: 100px; text-align: center;"onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
+  </div>
 {% endif %}
 
 </body>

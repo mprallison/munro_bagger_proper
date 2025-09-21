@@ -1,8 +1,6 @@
 //osmap api key
 const apiKey = window.API_KEY 
 
-//init leaflet map
-
 //centre to scotland
  var map = L.map('map', {
     center: [57.08, -4.02],
@@ -28,6 +26,7 @@ L.tileLayer(`https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?k
   continuousWorld: true,
   className: 'os-tiles'
 }).addTo(map);
+
 
 window.layerGroup = L.layerGroup().addTo(map);
 

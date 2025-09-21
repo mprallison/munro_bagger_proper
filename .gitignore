@@ -1,5 +1,8 @@
 database.db
-data/
+data/bags.csv
+data/users.csv
+data/teams.csv
+data/members.csv
 static/images/*
 static/images/!munro.png
 images/!peak.png

@@ -1,6 +1,5 @@
 export function addTeamMapMarkers(locations, color_list, user_imgs) {
 
-
     function createCircleIcon(color, count) {
     return L.divIcon({
         className: '',
@@ -46,7 +45,6 @@ export function addTeamMapMarkers(locations, color_list, user_imgs) {
         const teamIcon = loc.count === 0
         ? gapIcon 
         : createCircleIcon(color_list[loc.count], loc.count)
-
 
         const marker = L.marker([loc.latitude, loc.longitude], { icon: teamIcon })
             .addTo(layerGroup)

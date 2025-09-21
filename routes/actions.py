@@ -96,7 +96,7 @@ def create_team():
     response = add_team_query(team_name, user_id, DB)
 
     if response == 200:
-        message, color = "New team created!", "#00D100"
+        message, color = "New team created!", "#93C572"
     else:
         message, color = "Team name taken!", "#D10000"
 
@@ -127,7 +127,7 @@ def add_member():
     response = add_user_to_team_query(user_ids, team_id, DB)
 
     if response == 200:
-        message, color = "New members added!", "#00D100"
+        message, color = "New members added!", "#93C572"
     else:
         message, color = "A user is already a member!", "#D10000"
 
