@@ -19,6 +19,11 @@ canvas {
   z-index:0; 
 }
 
+button:hover {
+  filter: brightness(90%);
+  cursor: pointer;
+}
+
 #table_layer {
     display: block;
     position: absolute;
@@ -46,8 +51,8 @@ canvas {
 
 #login {
     position: fixed;   
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     padding: 5px 20px;
     background: rgba(255, 255, 255, 0.6);
     color: black;
@@ -57,7 +62,7 @@ canvas {
     font-weight: bold;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     text-align: top;
-    width: 160px;
+    width: 120px;
     height: 220px;
   }
 
@@ -71,8 +76,8 @@ canvas {
   
 #toggleSidebar {
   position: absolute;
-  top: 10px;
-  left: 170px;
+  top: 5px;
+  left: 10px;
   z-index: 1100;
   padding: 5px 10px;
   background-color: #fff;
@@ -91,20 +96,12 @@ button {
     cursor: pointer;
     }
 
-@media (hover: hover) and (pointer: fine) {
-  .leaflet-marker-icon:hover {
-    transform: scale(1.2);
-    z-index: 1000;
-    transition: transform 0.2s ease;
-  }
-}
-
 .leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
   box-shadow: 0 3px 14px rgba(0, 0, 0.0);
   }
 .leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
   }
 
 .popUp {

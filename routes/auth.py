@@ -35,7 +35,7 @@ def login():
     
     #else return error mesage
     else:
-        return redirect(url_for("index", message="Invalid credentials!", color="#D10000"))
+        return redirect(url_for("index", message="Bad credentials!", color="#D10000"))
     
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
@@ -47,9 +47,9 @@ def signup():
     response = add_user(user_name, password, DB)
 
     if response == 200:
-        message, color = "Log in and 🏔️👜", "#93C572"
+        message, color = "Log in!", "#93C572"
     else:
-        message, color = "Username taken!", "#D10000"
+        message, color = "Name taken!", "#D10000"
     
     return redirect(url_for("index", message=message, color=color))
 

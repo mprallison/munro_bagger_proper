@@ -10,66 +10,60 @@
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
-<body style= "background-color: #fff2e6; margin-left:10px; overflow-x:auto; overflow-y:auto;">
+<body style= "background-color: #fff2e6; margin:10px;">
 
-<div style="min-width: 400px;
-            background-color: #EBF6F9;
-            margin-top:20px;
-            margin-left:40px;
-            margin-right:40px;
-            border: 1px solid black; 
-            border-radius: 8px;
-            padding:10px;
-            position: relative;
-            display:flex;
-            flex-wrap:nowrap;
-            width:max-content; 
-          ">
-
-<div style="margin-left: 10px; margin-top: 10px;">
-
- {% if logged_in %}
-<div style="display: flex; gap: 10px;">
-  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ team| urlencode }}/team_view'">Team map</button>
-  <button style="width: 120px; text-align: center;"onclick="window.location.href='/{{ user }}/profile'">
-    <img style="width: 18px; height: 18px;" src="{{ user_imgs[user] }}"> 
-      Profile page</button>
-  <button style="width: 120px; text-align: center;"onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
-</div>
-{% else %}
-<div style="position: absolute; top: 0; right: 0; padding: 10px;">
-  <button style="width: 100px; text-align: center; background-color: #FFCCCB; font-weight:bold;" onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
-</div>
-{% endif %}
-
-<div style="display: column;">
-
-  <h2 style="margin-bottom: 10px; margin-top: 5px;"><u>{{ team }}</u></h2>
-
-  <p style="font-size: 18px; margin-top: 0; margin-bottom: 5px">
-{% for member in members %}
-  <a href='/{{ member| urlencode }}/view'
-     style="display: inline-flex; 
-        align-items: center; 
-        gap: 4px;
-        padding: 4px 8px; 
-        margin-right: 6px;
+<div style="
+        max-width: calc(100vw - 50px);
+        max-height: calc(100vh - 200px);
+        border: 1px solid #ccc;
+        overflow: auto;
+       
+        padding: 10px;
         border: 1px solid black; 
         border-radius: 8px;
-        text-decoration: none; 
-        color: black;
-        background-color: #e0f0ff;
-        ">
-    
-    <img src="{{ user_imgs[member] }}" 
-         style="width: 24px; height: 24px; border-radius: 50%;">
-    {{ member }}
-  </a>
-{% endfor %}
-  </p>
+        width: fit-content;
+     ">
+  <div style="width: max-content;">
+    <!-- Wide content goes here, e.g., buttons or links -->
+    {% if logged_in %}
+    <div style="display: flex; gap: 10px;">
+      <button style="width: 120px;" onclick="window.location.href='/{{ team| urlencode }}/team_view'">Team map</button>
+      <button style="width: 120px;" onclick="window.location.href='/{{ user }}/profile'">
+        <img style="width: 18px; height: 18px;" src="{{ user_imgs[user] }}"> Profile page
+      </button>
+      <button style="width: 120px;" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+    </div>
+    {% else %}
+    <div style="position: absolute; top: 0; right: 0; padding: 10px;">
+      <button style="width: 100px; text-align: center; background-color: #FFCCCB; font-weight:bold;" onclick="window.location.href='{{ url_for('index') }}'">Homepage</button>
+    </div>
+    {% endif %}
+
+    <div>
+      <h2 style="margin-bottom: 10px; margin-top: 5px;"><u>{{ team }}</u></h2>
+      <p style="font-size: 18px; margin-top: 0; margin-bottom: 5px">
+        {% for member in members %}
+        <a href='/{{ member| urlencode }}/view'
+           style="display: inline-flex; 
+                  align-items: center; 
+                  gap: 4px;
+                  padding: 4px 8px; 
+                  margin-right: 6px;
+                  border: 1px solid black; 
+                  border-radius: 8px;
+                  text-decoration: none; 
+                  color: black;
+                  background-color: #e0f0ff;">
+          <img src="{{ user_imgs[member] }}" 
+               style="width: 24px; height: 24px; border-radius: 50%;">
+          {{ member }}
+        </a>
+        {% endfor %}
+      </p>
+    </div>
+  </div>
 </div>
-</div>
-</div>
+
 
 <style>
   table th {
@@ -111,7 +105,7 @@
             overflow: auto;
             display: inline-block;
             width: fit-content;
-            margin-left: 20px;
+            margin-left: 10px;
             margin-top: 20px;
           ">
 

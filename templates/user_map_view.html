@@ -15,6 +15,7 @@
   <script type="module" src="/static/js/navigate_to_coords.js"></script>
   <script type="module" src="/static/js/filter_map_sidebar.js"></script>
   <script type="module" src="/static/js/toggle_side_bar.js"></script>
+
   <!--leaflet stylesheet-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -26,7 +27,7 @@
 <div id="map"></div>
 
 <!--add sidebar table with color for bags-->
-<div id="table_layer">
+<div id="table_layer" class="collapsed">
   <table id="mountainTable">
 
     <thead style="position: fixed; top: 0; background: white; z-index: 1000;">
@@ -67,7 +68,7 @@
 </div>
 
 <!-- Toggle Button -->
-<button id="toggleSidebar">Hide table</button>
+<button id="toggleSidebar">Show table</button>
 
 <!--add base map-->
 <script src="/static/js/base_map.js"></script>
