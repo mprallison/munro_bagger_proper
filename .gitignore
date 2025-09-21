@@ -4,8 +4,8 @@ data/users.csv
 data/teams.csv
 data/members.csv
 static/images/*
-static/images/!munro.png
-images/!peak.png
-images/!gap.png
+!static/images/munro.png
+!static/images/bag.png
+!static/images/gap.png
 *.ipynb_checkpoints
 .env
