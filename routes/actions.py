@@ -68,7 +68,7 @@ def upload_image():
 
     return redirect(url_for("pages.user_profile_page", user=user_name))
 
-#download user mbag data as csv
+#download user bag data as csv
 @actions_bp.route('/downloadData')
 def download_data():
 

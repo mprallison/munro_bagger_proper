@@ -14,9 +14,8 @@ def get_user_image(user_name):
 
 def get_all_user_images(DB):
 
-    conn = sqlite3.connect(DB)
-    user_df = pd.read_sql_query("SELECT user_name FROM users", conn)
-    conn.close()
+    with sqlite3.connect(DB) as conn:
+        user_df = pd.read_sql_query("SELECT user_name FROM users", conn)
 
     user_imgs = {}
     for u in user_df["user_name"]:

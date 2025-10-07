@@ -9,3 +9,4 @@ static/images/*
 !static/images/gap.png
 *.ipynb_checkpoints
 .env
+venv/

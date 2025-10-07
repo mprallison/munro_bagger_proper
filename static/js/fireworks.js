@@ -45,7 +45,7 @@ export function startFireworksOnMap(map) {
             ctx.beginPath();
             ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
             //ctx.fill();
-            ctx.fillText('⛰️', this.x, this.y);
+            ctx.fillText('🏔️', this.x, this.y);
             ctx.restore();
         }
     }

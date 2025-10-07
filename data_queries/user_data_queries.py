@@ -4,25 +4,19 @@ import pandas as pd
 
 def get_user(user_name, password, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
 
-    get_user_query = """SELECT user_id, user_name, password
-                        FROM users 
-                        WHERE user_name = ? and password = ?
-                        """
-    
-    cur.execute(get_user_query, (user_name, password, ))
-    
-    user = cur.fetchone()
-    conn.close()
+        get_user_query = """SELECT user_id, user_name, password
+                            FROM users 
+                            WHERE user_name = ? and password = ?
+                            """
+        
+        cur.execute(get_user_query, (user_name, password, ))
+        
+        user = cur.fetchone()
 
     return user
-
-def add_user(user_name, password, DB):
-
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
 
 def add_user(user_name, password, DB):
     
@@ -55,64 +49,61 @@ def add_user(user_name, password, DB):
 
 def check_user_exists(user_name, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM users WHERE user_name = ?;", (user_name,))
-    count = cur.fetchone()[0]
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM users WHERE user_name = ?;", (user_name,))
+        count = cur.fetchone()[0]
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
     return count
 
 def check_team_exists(team_name, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM teams WHERE team_name = ?;", (team_name,))
-    count = cur.fetchone()[0]
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM teams WHERE team_name = ?;", (team_name,))
+        count = cur.fetchone()[0]
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
     return count
 
 def delete_user_data(user_id, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
 
-    cur.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
-    cur.execute("DELETE FROM bags WHERE user_id = ?", (user_id,))
+        cur.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+        cur.execute("DELETE FROM bags WHERE user_id = ?", (user_id,))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
 def get_all_users(DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
-    cur.execute("SELECT user_id, user_name FROM users")
-    all_users = cur.fetchall()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT user_id, user_name FROM users")
+        all_users = cur.fetchall()
 
     return all_users
 
 def get_user_teams(user_id, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
 
-    user_team_query = """SELECT t.team_id, t.team_name
-                        FROM members m
-                        LEFT JOIN teams t
-                        ON m.team_id = t.team_id
-                        WHERE m.user_id =  ?;
-                        """
-    
-    
-    user_teams_df  = pd.read_sql(user_team_query, conn, params=(user_id,))
+        user_team_query = """SELECT t.team_id, t.team_name
+                            FROM members m
+                            LEFT JOIN teams t
+                            ON m.team_id = t.team_id
+                            WHERE m.user_id =  ?;
+                            """
+        
+        
+        user_teams_df  = pd.read_sql(user_team_query, conn, params=(user_id,))
 
-    user_teams = user_teams_df.to_dict(orient='records')
+        user_teams = user_teams_df.to_dict(orient='records')
 
     return user_teams
 
@@ -145,51 +136,46 @@ def add_team_query(team_name, user_id, DB):
 
 def quit_team_query(user_id, team_ids, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
 
-    try:
-        # Prepare list of (user_id, team_id) tuples for executemany
-        params = [(user_id, team_id) for team_id in team_ids]
+        try:
+            #list of (user_id, team_id) tuples for executemany
+            params = [(user_id, team_id) for team_id in team_ids]
 
-        # Delete members for all (user_id, team_id) pairs
-        cur.executemany(
-            "DELETE FROM members WHERE user_id = ? AND team_id = ?",
-            params
-        )
+            # delete user from team
+            cur.executemany(
+                "DELETE FROM members WHERE user_id = ? AND team_id = ?",
+                params
+            )
 
-        # Delete empty teams
-        for team_id in team_ids:
-            cur.execute("SELECT COUNT(*) FROM members WHERE team_id = ?", (team_id,))
-            count = cur.fetchone()[0]
-            if count == 0:
-                cur.execute("DELETE FROM teams WHERE team_id = ?", (team_id,))
+            # delete empty team
+            for team_id in team_ids:
+                cur.execute("SELECT COUNT(*) FROM members WHERE team_id = ?", (team_id,))
+                count = cur.fetchone()[0]
+                if count == 0:
+                    cur.execute("DELETE FROM teams WHERE team_id = ?", (team_id,))
 
-        conn.commit()
-        return 200
-    
-    except Exception as e:
-        return 404
-    finally:
-        conn.close()
+            conn.commit()
+            return 200
+        
+        except Exception as e:
+            return 404
 
 def add_user_to_team_query(user_ids, team_id, DB):
 
-    conn = sqlite3.connect(DB)
-    cur = conn.cursor()
+    with sqlite3.connect(DB) as conn:
+        cur = conn.cursor()
 
-    members = []
-    for user in user_ids:
-        members.append((team_id, user))
+        members = []
+        for user in user_ids:
+            members.append((team_id, user))
 
-    try:
-        cur.executemany("INSERT INTO members (team_id, user_id) VALUES (?, ?);", members)
-        conn.commit()
-        conn.close()
+        try:
+            cur.executemany("INSERT INTO members (team_id, user_id) VALUES (?, ?);", members)
+            conn.commit()
+            
+            return 200
         
-        return 200
-    
-    except:
-        return 404
-    finally:
-        conn.close()
+        except:
+            return 404
