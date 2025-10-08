@@ -1,12 +1,10 @@
-database.db
-data/bags.csv
-data/users.csv
-data/teams.csv
-data/members.csv
+data/*
+!data/munros.csv
 static/images/*
 !static/images/munro.png
 !static/images/bag.png
 !static/images/gap.png
 *.ipynb_checkpoints
+*__pycache__/
 .env
 venv/
